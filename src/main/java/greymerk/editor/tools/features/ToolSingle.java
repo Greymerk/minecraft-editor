@@ -16,8 +16,8 @@ public class ToolSingle implements ITool {
 	@Override
 	public void onClick(WorldEditor editor, Random rand, EntityPlayer player, ToolState state, Coord pos) {
 		MetaBlock block = editor.getBlock(pos);
-		state.init(editor, BlockProvider.METABLOCK, block);
-		String msg = "Single block fill set to: " + block.getBlock().getUnlocalizedName();
+		state.init(BlockProvider.METABLOCK, block);
+		String msg = "Brush set to: " + block.getBlock().getUnlocalizedName();
 		player.addChatComponentMessage(new ChatComponentText(msg));	
 	}
 

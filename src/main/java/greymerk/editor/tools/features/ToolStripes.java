@@ -9,12 +9,15 @@ import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.MetaBlock;
 import greymerk.editor.worldgen.WorldEditor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 
 public class ToolStripes implements ITool {
 
 	@Override
 	public void onClick(WorldEditor editor, Random rand, EntityPlayer player, ToolState state, Coord pos) {
 		MetaBlock block = editor.getBlock(pos);
-		state.init(editor, BlockProvider.STRIPES, block);
+		state.init(BlockProvider.STRIPES, block);
+		String msg = "New Stripes created";
+		player.addChatComponentMessage(new ChatComponentText(msg));
 	}
 }

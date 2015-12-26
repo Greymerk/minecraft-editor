@@ -19,17 +19,13 @@ public class ToolState {
 	Map<BlockProvider, IBlockFactory> brushes;
 	private boolean fillAir;
 	private boolean replaceSolid;
-	private Coord cursor;
+	private Coord start;
 	
 	public ToolState(){
-		type = BlockProvider.JUMBLE;
 		this.brushes = new HashMap<BlockProvider, IBlockFactory>();
-		this.brushes.put(BlockProvider.JUMBLE, new BlockJumble());
 		this.fillAir = true;
 		this.replaceSolid = true;
-		BlockJumble jumble = (BlockJumble)this.brushes.get(BlockProvider.JUMBLE);
-		jumble.addBlock(new MetaBlock(Blocks.quartz_block));
-		jumble.addBlock(new MetaBlock(Blocks.obsidian));
+		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.air));
 	}
 	
 	public void setBlock(WorldEditor editor, Random rand, Coord pos){
@@ -37,18 +33,25 @@ public class ToolState {
 	}
 	
 	public void setStart(Coord pos){
-		this.cursor = new Coord(pos);
+		this.start = new Coord(pos);
 	}
 	
-	public void fillRectSolid(WorldEditor editor, Random rand, Coord end){
-		brushes.get(this.type).fillRectSolid(editor, rand, this.cursor, end, fillAir, replaceSolid);
+	public boolean fillRectSolid(WorldEditor editor, Random rand, Coord end){
+		if(start == null) return false;
+		
+		brushes.get(this.type).fillRectSolid(editor, rand, this.start, end, fillAir, replaceSolid);
+		start = null;
+		return true;
 	}
 	
-	public void fillRectHollow(WorldEditor editor, Random rand, Coord end){
-		brushes.get(this.type).fillRectHollow(editor, rand, this.cursor, end, fillAir, replaceSolid);
+	public boolean fillRectHollow(WorldEditor editor, Random rand, Coord end){
+		if(start == null) return false;
+		brushes.get(this.type).fillRectHollow(editor, rand, this.start, end, fillAir, replaceSolid);
+		start = null;
+		return true;
 	}
 	
-	public void init(WorldEditor editor, BlockProvider type, MetaBlock block){
+	public void init(BlockProvider type, MetaBlock block){
 		this.type = type;		
 		switch(type){
 		case METABLOCK: 

@@ -16,7 +16,7 @@ public class ToolAddBlock implements ITool {
 	public void onClick(WorldEditor editor, Random rand, EntityPlayer player, ToolState state, Coord pos) {
 		MetaBlock block = editor.getBlock(pos);
 		state.addBlock(editor, block);
-		String msg = "Block Added: " + block.getBlock().getUnlocalizedName();
+		String msg = "Block Added: " + block.getBlock().getLocalizedName();
 		player.addChatComponentMessage(new ChatComponentText(msg));		
 	}
 
