@@ -10,11 +10,13 @@ import greymerk.editor.tools.features.ToolBlockSet;
 import greymerk.editor.tools.features.ToolFillHollow;
 import greymerk.editor.tools.features.ToolFillSolid;
 import greymerk.editor.tools.features.ToolJumble;
+import greymerk.editor.tools.features.ToolPlaceBlock;
 import greymerk.editor.tools.features.ToolSingle;
 import greymerk.editor.tools.features.ToolStart;
 import greymerk.editor.tools.features.ToolStripes;
 import greymerk.editor.tools.features.ToolToggleFillAir;
 import greymerk.editor.tools.features.ToolToggleReplaceSolid;
+import greymerk.editor.worldgen.Cardinal;
 import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.WorldEditor;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,6 +44,7 @@ public class ToolBox {
 		tools.put(Items.feather, new ToolAir());
 		tools.put(Items.ghast_tear, new ToolToggleFillAir());
 		tools.put(Items.gold_nugget, new ToolToggleReplaceSolid());
+		tools.put(Items.glowstone_dust, new ToolPlaceBlock());
 	}
 	
 	public ITool get(Item item){
@@ -49,12 +52,12 @@ public class ToolBox {
 		return tools.get(item);
 	}
 
-	public void action(WorldEditor editor, Random rand, EntityPlayer player, Coord pos) {
+	public void action(WorldEditor editor, Random rand, EntityPlayer player, Cardinal dir, Coord pos) {
 		ItemStack held = player.getHeldItem();
 		if(held == null) return;
 		ITool tool = get(held.getItem());
 		if(tool == null) return;
-		tool.onClick(editor,  rand, player, state, pos);
+		tool.onClick(editor,  rand, player, state, dir, pos);
 	}
 	
 }

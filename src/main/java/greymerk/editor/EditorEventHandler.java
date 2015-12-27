@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.Random;
 
 import greymerk.editor.tools.ToolBox;
+import greymerk.editor.worldgen.Cardinal;
 import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.WorldEditor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -34,7 +36,9 @@ public class EditorEventHandler {
 		Coord pos = new Coord(event.pos.getX(), event.pos.getY(), event.pos.getZ());
 		
 		ToolBox box = fetchBox(player);
-		box.action(editor, rand, player, pos);
+		EnumFacing face = event.face;
+		Cardinal dir = Cardinal.getOrientation(face);
+		box.action(editor, rand, player, dir, pos);
 	}
 	
 	private ToolBox fetchBox(EntityPlayer player){

@@ -27,6 +27,8 @@ public enum Cardinal {
 		case EAST: return WEST;
 		case WEST: return EAST;
 		case SOUTH: return NORTH;
+		case DOWN: return UP;
+		case UP: return DOWN;
 		default: return null;
 		}
 	}
@@ -66,5 +68,19 @@ public enum Cardinal {
 		case DOWN: return EnumOrientation.DOWN_X;
 		default: return null;
 		}
+	}
+
+
+	public static Cardinal getOrientation(EnumFacing face) {
+		switch(face){
+		case SOUTH: return Cardinal.NORTH;
+		case NORTH: return Cardinal.SOUTH;
+		case EAST: return Cardinal.WEST;
+		case WEST: return Cardinal.EAST;
+		case UP: return Cardinal.DOWN;
+		case DOWN: return Cardinal.UP;
+		default: return null; 
+		}
+		
 	}
 }
