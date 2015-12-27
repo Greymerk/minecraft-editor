@@ -282,5 +282,10 @@ public class WorldEditor {
 		if(!this.isAirBlock(pos)) return false;
 		return block.getBlock().canPlaceBlockOnSide(world, pos.getBlockPos(), Cardinal.getFacing(dir));
 	}
+	
+	public boolean isReplaceable(Coord pos){
+		Block target = this.getBlock(pos).getBlock();
+		return target.isReplaceable(world, pos.getBlockPos());
+	}
 }
 
