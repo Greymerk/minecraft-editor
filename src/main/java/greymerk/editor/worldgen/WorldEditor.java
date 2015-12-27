@@ -44,6 +44,12 @@ public class WorldEditor {
 			//ignore it.
 		}
 		
+		Block b = block.getBlock();
+		world.playSoundEffect((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F), 
+				b.stepSound.getPlaceSound(), 
+				(b.stepSound.getVolume() + 1.0F) / 2.0F, 
+				b.stepSound.getFrequency() * 0.8F);
+		
 		Block type = block.getBlock();
 		Integer count = stats.get(type);
 		if(count == null){
