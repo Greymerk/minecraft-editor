@@ -37,7 +37,7 @@ public class EditorEventHandler {
 		
 		ToolBox box = fetchBox(player);
 		EnumFacing face = event.face;
-		Cardinal dir = Cardinal.getOrientation(face);
+		Cardinal dir = Cardinal.getDirFromFace(face);
 		box.action(editor, rand, player, dir, pos);
 	}
 	

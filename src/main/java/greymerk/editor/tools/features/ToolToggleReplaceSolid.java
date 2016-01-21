@@ -6,14 +6,14 @@ import greymerk.editor.tools.ITool;
 import greymerk.editor.tools.ToolState;
 import greymerk.editor.worldgen.Cardinal;
 import greymerk.editor.worldgen.Coord;
-import greymerk.editor.worldgen.WorldEditor;
+import greymerk.editor.worldgen.IWorldEditor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
 public class ToolToggleReplaceSolid implements ITool {
 
 	@Override
-	public void onClick(WorldEditor editor, Random rand, EntityPlayer player, ToolState state, Cardinal dir, Coord pos) {
+	public void onClick(IWorldEditor editor, Random rand, EntityPlayer player, ToolState state, Cardinal dir, Coord pos) {
 		boolean replaceSolid = state.toggleReplaceSolid();
 		String msg = "Replace Solid: " + (replaceSolid ? "Yes" : "No");
 		player.addChatComponentMessage(new ChatComponentText(msg));

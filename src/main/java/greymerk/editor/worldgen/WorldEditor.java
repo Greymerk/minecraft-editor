@@ -2,11 +2,10 @@ package greymerk.editor.worldgen;
 
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import greymerk.editor.worldgen.shapes.RectSolid;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -15,17 +14,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public class WorldEditor {
+public class WorldEditor implements IWorldEditor{
 	
 	World world;
 	private Map<Block, Integer> stats;
+
 	
 	public WorldEditor(World world){
 		this.world = world;
 		stats = new HashMap<Block, Integer>();
 	}
 	
-	public boolean setBlock(Coord pos, IBlockState block, int flags, boolean fillAir, boolean replaceSolid){
+	private boolean setBlock(Coord pos, IBlockState block, int flags, boolean fillAir, boolean replaceSolid){
 		
 		MetaBlock currentBlock = getBlock(pos);
 		
@@ -44,12 +44,6 @@ public class WorldEditor {
 			//ignore it.
 		}
 		
-		Block b = block.getBlock();
-		world.playSoundEffect((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F), 
-				b.stepSound.getPlaceSound(), 
-				(b.stepSound.getVolume() + 1.0F) / 2.0F, 
-				b.stepSound.getFrequency() * 0.8F);
-		
 		Block type = block.getBlock();
 		Integer count = stats.get(type);
 		if(count == null){
@@ -62,194 +56,84 @@ public class WorldEditor {
 		
 	}
 	
-	public boolean setBlock(Coord pos, MetaBlock block){
-		return block.setBlock(this, pos);
+	@Override
+	public boolean setBlock(Coord pos, MetaBlock block, boolean fillAir, boolean replaceSolid){
+		return this.setBlock(pos, block.getState(), block.getFlag(), fillAir, replaceSolid);
 	}
 	
-	public boolean setBlock(Coord pos, Block block){
-		return setBlock(pos, new MetaBlock(block));
-	}
-	
-	public boolean setBlock(Random rand, Coord coord, IBlockFactory blocks, boolean fillAir, boolean replaceSolid) {
-		return blocks.setBlock(this, rand, coord, fillAir, replaceSolid);
-	}
-	
+	@Override
 	public boolean isAirBlock(Coord pos){
 		return world.isAirBlock(pos.getBlockPos());
 	}
 	
+	@Override
 	public long getSeed(){
 		return this.world.getSeed();
 	}
 	
+	@Override
 	public BiomeGenBase getBiome(Coord pos){
 		return world.getBiomeGenForCoords(pos.getBlockPos());
 	}
 	
+	@Override
 	public int getDimension(){
 		return world.provider.getDimensionId();
 	}
 	
-	public Random setSeed(int a, int b, int c){
+	@Override
+	public Random getSeededRandom(int a, int b, int c){
 		return world.setRandomSeed(a, b, c);
 	}
-	
-	public void fillRectSolid(Random rand, Coord start, Coord end, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
 		
-		Coord c1 = new Coord(start);
-		Coord c2 = new Coord(end);
+	@Override
+	public void spiralStairStep(Random rand, Coord origin, IStair stair, IBlockFactory fill){
 		
-		Coord.correct(c1, c2);
-		
-		for(int x = c1.getX(); x <= c2.getX(); x++){
-			for(int y = c1.getY(); y <= c2.getY(); y++){
-				for(int z = c1.getZ(); z <= c2.getZ(); z++){
-					this.setBlock(rand, new Coord(x, y, z), blocks, fillAir, replaceSolid);
-				}
-			}
-		}
-	}
-	
-	public void fillRectHollow(Random rand, Coord start, Coord end, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
-		
-		Coord c1 = new Coord(start);
-		Coord c2 = new Coord(end);
-		
-		Coord.correct(c1, c2);
-		
-		for(int x = c1.getX(); x <= c2.getX(); x++){
-			for(int y = c1.getY(); y <= c2.getY(); y++){
-				for(int z = c1.getZ(); z <= c2.getZ(); z++){
-					if(x == c1.getX() || x == c2.getX() || y == c1.getY() || y == c2.getY() || z == c1.getZ() || z == c2.getZ()){
-						setBlock(rand, new Coord(x, y, z), blocks, fillAir, replaceSolid);
-					} else {					
-						setBlock(new Coord(x, y, z), new MetaBlock(Blocks.air));
-					}	
-				}
-			}
-			
-		}
-	}
-	
-
-	public static List<Coord> getRectSolid(Coord start, Coord end){
-		return getRectSolid(start.getX(), start.getY(), start.getZ(), end.getX(), end.getY(), end.getZ());
-	}
-	
-	public static List<Coord> getRectSolid(int x1, int y1, int z1, int x2, int y2, int z2){
-		
-		Coord c1 = new Coord(x1, y1, z1);
-		Coord c2 = new Coord(x2, y2, z2);
-		
-		Coord.correct(c1, c2);
-		
-		List<Coord> points = new LinkedList<Coord>();
-		
-		for(int x = c1.getX(); x <= c2.getX(); x++){
-			for(int y = c1.getY(); y <= c2.getY(); y++){
-				for(int z = c1.getZ(); z <= c2.getZ(); z++){
-					points.add(new Coord(x, y, z));
-				}
-			}
-		}	
-		
-		return points;
-	}
-	
-	public List<Coord> getRectHollow(Coord start, Coord end){
-		return getRectHollow(start.getX(), start.getY(), start.getZ(), end.getX(), end.getY(), end.getZ());
-	}
-	
-	public List<Coord> getRectHollow(int x1, int y1, int z1, int x2, int y2, int z2){
-
-		
-		List<Coord> points = new LinkedList<Coord>();
-		
-		Coord c1 = new Coord(x1, y1, z1);
-		Coord c2 = new Coord(x2, y2, z2);
-		
-		Coord.correct(c1, c2);
-		
-		for(int x = c1.getX(); x <= c2.getX(); x++){
-			for(int y = c1.getY(); y <= c2.getY(); y++){
-				for(int z = c1.getZ(); z <= c2.getZ(); z++){
-					if(x == x1 || x == x2 || y == y1 || y == y2 || z == z1 || z == z2){
-						points.add(new Coord(x, y, z));
-					}
-				}
-			}
-		}
-		
-		return points;
-	}
-	
-	public void fillPyramidSolid(Random rand, Coord base, int height, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
-		
-		if(height == 0){
-			setBlock(rand, base, blocks, fillAir, replaceSolid);
-			return;
-		}
-		
+		MetaBlock air = new MetaBlock(Blocks.air);
+		Coord cursor;
 		Coord start;
 		Coord end;
 		
-		start = new Coord(base);
-		end = new Coord(base);
-		start.add(Cardinal.NORTH, height);
-		start.add(Cardinal.WEST, height);
-		end.add(Cardinal.SOUTH, height);
-		end.add(Cardinal.EAST, height);
+		start = new Coord(origin);
+		start.add(new Coord(-1, 0, -1));
+		end = new Coord(origin);
+		end.add(new Coord(1, 0, 1));
 		
-		fillRectSolid(rand, start, end, blocks, fillAir, replaceSolid);
+		RectSolid.fill(this, rand, start, end, air);
+		fill.set(this, rand, origin);
 		
-		base.add(Cardinal.UP);
-		
-		fillPyramidSolid(rand, base, (height - 1), blocks, fillAir, replaceSolid);
-		
+		Cardinal dir = Cardinal.directions[origin.getY() % 4];
+		cursor = new Coord(origin);
+		cursor.add(dir);
+		stair.setOrientation(Cardinal.left(dir), false).set(this, cursor);
+		cursor.add(Cardinal.right(dir));
+		stair.setOrientation(Cardinal.right(dir), true).set(this, cursor);
+		cursor.add(Cardinal.reverse(dir));
+		stair.setOrientation(Cardinal.reverse(dir), true).set(this, cursor);
 	}
 	
+	@Override
 	public void fillDown(Random rand, Coord origin, IBlockFactory blocks){
 
 		Coord cursor = new Coord(origin);
 		
 		while(!getBlock(cursor).getBlock().getMaterial().isOpaque() && cursor.getY() > 1){
-			blocks.setBlock(this, rand, cursor);
+			blocks.set(this, rand, cursor);
 			cursor.add(Cardinal.DOWN);
 		}
 	}
 	
+	@Override
 	public MetaBlock getBlock(Coord pos){
 		return new MetaBlock(world.getBlockState(pos.getBlockPos()));
 	}
 	
+	@Override
 	public TileEntity getTileEntity(Coord pos){
 		return world.getTileEntity(pos.getBlockPos());
 	}
 	
-	public void setBlock(int x, int y, int z, Block block){
-		new MetaBlock(block).setBlock(this, new Coord(x, y, z));
-	}
-	
-	public void setBlock(int x, int y, int z, MetaBlock block){
-		block.setBlock(this, new Coord(x, y, z));
-	}
-	
-	public void fillRectSolid(Random rand, int x, int y, int z, int x2, int y2, int z2, IBlockFactory blocks){
-		fillRectSolid(rand, new Coord(x, y, z), new Coord(x2, y2, z2), blocks, true, true);
-	}
-	
-	public void fillRectSolid(Random rand, int x, int y, int z, int x2, int y2, int z2, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
-		fillRectSolid(rand, new Coord(x, y, z), new Coord(x2, y2, z2), blocks, fillAir, replaceSolid);
-	}
-	
-	public void setBlock(Random rand, int x, int y, int z, IBlockFactory block, boolean fillAir, boolean replaceSolid){
-		setBlock(rand, new Coord(x, y, z), block, true, true);
-	}
-	
-	public void fillRectHollow(Random rand, int x, int y, int z, int x2, int y2, int z2, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
-		fillRectHollow(rand, new Coord(x, y, z), new Coord(x2, y2, z2), blocks, fillAir, replaceSolid);
-	}
-	
+	@Override
 	public boolean validGroundBlock(Coord pos){
 		
 		if(isAirBlock(pos)) return false;
@@ -279,17 +163,20 @@ public class WorldEditor {
 		return toReturn;
 	}
 	
+	@Override
 	public int getStat(Block type){
 		if(!this.stats.containsKey(type)) return 0;
 		return this.stats.get(type);
 	}
-		
+	
+	@Override
 	public boolean canPlace(MetaBlock block, Coord pos, Cardinal dir){
 		if(!this.isAirBlock(pos)) return false;
-		return block.getBlock().canPlaceBlockOnSide(world, pos.getBlockPos(), Cardinal.getFacing(dir));
+		return block.getBlock().canPlaceBlockOnSide(world, pos.getBlockPos(), Cardinal.facing(dir));
 	}
-	
-	public boolean isReplaceable(Coord pos){
+
+	@Override
+	public boolean isReplaceable(Coord pos) {
 		Block target = this.getBlock(pos).getBlock();
 		return target.isReplaceable(world, pos.getBlockPos());
 	}

@@ -9,8 +9,10 @@ import greymerk.editor.worldgen.BlockProvider;
 import greymerk.editor.worldgen.BlockStripes;
 import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IBlockFactory;
+import greymerk.editor.worldgen.IWorldEditor;
 import greymerk.editor.worldgen.MetaBlock;
-import greymerk.editor.worldgen.WorldEditor;
+import greymerk.editor.worldgen.shapes.RectHollow;
+import greymerk.editor.worldgen.shapes.RectSolid;
 import net.minecraft.init.Blocks;
 
 public class ToolState {
@@ -28,25 +30,25 @@ public class ToolState {
 		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.air));
 	}
 	
-	public void setBlock(WorldEditor editor, Random rand, Coord pos){
-		brushes.get(this.type).setBlock(editor, rand, pos);
+	public void setBlock(IWorldEditor editor, Random rand, Coord pos){
+		brushes.get(this.type).set(editor, rand, pos);
 	}
 	
 	public void setStart(Coord pos){
 		this.start = new Coord(pos);
 	}
 	
-	public boolean fillRectSolid(WorldEditor editor, Random rand, Coord end){
+	public boolean fillRectSolid(IWorldEditor editor, Random rand, Coord end){
 		if(start == null) return false;
 		
-		brushes.get(this.type).fillRectSolid(editor, rand, this.start, end, fillAir, replaceSolid);
+		brushes.get(this.type).fill(editor, rand, new RectSolid(this.start, end), fillAir, replaceSolid);
 		start = null;
 		return true;
 	}
 	
-	public boolean fillRectHollow(WorldEditor editor, Random rand, Coord end){
+	public boolean fillRectHollow(IWorldEditor editor, Random rand, Coord end){
 		if(start == null) return false;
-		brushes.get(this.type).fillRectHollow(editor, rand, this.start, end, fillAir, replaceSolid);
+		brushes.get(this.type).fill(editor, rand, new RectHollow(this.start, end), fillAir, replaceSolid);
 		start = null;
 		return true;
 	}
@@ -71,7 +73,7 @@ public class ToolState {
 		}
 	}
 	
-	public void addBlock(WorldEditor editor, MetaBlock block){		
+	public void addBlock(IWorldEditor editor, MetaBlock block){		
 		IBlockFactory brush = brushes.get(this.type);
 		
 		switch(this.type){
