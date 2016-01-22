@@ -11,8 +11,7 @@ import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IBlockFactory;
 import greymerk.editor.worldgen.IWorldEditor;
 import greymerk.editor.worldgen.MetaBlock;
-import greymerk.editor.worldgen.shapes.RectHollow;
-import greymerk.editor.worldgen.shapes.RectSolid;
+import greymerk.editor.worldgen.shapes.IShape;
 import net.minecraft.init.Blocks;
 
 public class ToolState {
@@ -38,23 +37,17 @@ public class ToolState {
 		this.start = new Coord(pos);
 	}
 	
-	public boolean fillRectSolid(IWorldEditor editor, Random rand, Coord end){
-		if(start == null) return false;
-		
-		brushes.get(this.type).fill(editor, rand, new RectSolid(this.start, end), fillAir, replaceSolid);
-		start = null;
-		return true;
+	public Coord getStart(){
+		return this.start;
 	}
 	
-	public boolean fillRectHollow(IWorldEditor editor, Random rand, Coord end){
-		if(start == null) return false;
-		brushes.get(this.type).fill(editor, rand, new RectHollow(this.start, end), fillAir, replaceSolid);
+	public void fill(IWorldEditor editor, Random rand, IShape shape){
+		shape.fill(editor, rand, brushes.get(this.type), fillAir, replaceSolid);
 		start = null;
-		return true;
 	}
 	
 	public void init(BlockProvider type, MetaBlock block){
-		this.type = type;		
+		this.type = type;
 		switch(type){
 		case METABLOCK: 
 			this.brushes.put(type, block);
