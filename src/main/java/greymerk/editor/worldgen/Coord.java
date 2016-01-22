@@ -63,7 +63,7 @@ public class Coord{
 	public Coord sub(Coord other){
 		x -= other.x;
 		y -= other.y;
-		z -= other.y;
+		z -= other.z;
 		return this;
 	}
 	
@@ -72,10 +72,11 @@ public class Coord{
 	}
 
 	public double distance(Coord other){
-		double side1 = Math.abs(this.getX() - other.getX());
-		double side2 = Math.abs(this.getZ() - other.getZ());
+		double xd = Math.abs(this.getX() - other.getX());
+		double yd = Math.abs(this.getY() - other.getY());
+		double zd = Math.abs(this.getZ() - other.getZ());
 		
-		return Math.sqrt((side1 * side1) + (side2 * side2));
+		return Math.sqrt((xd * xd) + (yd * yd) + (zd * zd));
 	}
 	
 	// Arranges two coords so that the they create a positive cube.
