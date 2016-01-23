@@ -5,48 +5,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import greymerk.editor.worldgen.Cardinal;
 import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IBlockFactory;
 import greymerk.editor.worldgen.IWorldEditor;
 
 public class Sphere implements IShape {
 
-	private Coord s;
-	private Coord e;
-	private List<Coord> sphere;
-	
-	public Sphere(Coord start, Coord end){
-		this.s = new Coord(start);
-		this.e = new Coord(end);
-		
-		Coord.correct(this.s, this.e);
-		Coord diff = this.e.sub(this.s);
-		
-		int r = diff.getX();
-		r = r < diff.getY() ? diff.getY() : r;
-		r = r < diff.getZ() ? diff.getZ() : r;
-		
-		diff = new Coord(r, r, r);
-		
-		this.s = new Coord(start);
-		this.s.sub(diff);
-		this.e = new Coord(start);
-		this.e.add(diff);
+	private Coord start;
+	private Coord end;
 
-		RectSolid cube = new RectSolid(this.s, this.e);
-		
-		double radius = (double)r + 0.5;
-		
-		this.sphere = new ArrayList<Coord>();
-		for(Coord pos : cube){
-			double d = pos.distance(start);
-			if(d < radius) this.sphere.add(pos);
-		}
+	public Sphere(Coord start, Coord end){
+		this.start = new Coord(start);
+		this.end = new Coord(end);
 	}
 	
 	@Override
 	public Iterator<Coord> iterator() {
-		return sphere.iterator();
+		return new SphereIterator(start, end);
 	}
 
 	@Override
@@ -57,7 +33,7 @@ public class Sphere implements IShape {
 
 	@Override
 	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
-		for(Coord pos : sphere){
+		for(Coord pos : this){
 			block.set(editor, rand, pos, fillAir, replaceSolid);
 		}
 	}
@@ -65,8 +41,100 @@ public class Sphere implements IShape {
 	@Override
 	public List<Coord> get() {
 		List<Coord> copy = new ArrayList<Coord>();
-		copy.addAll(sphere);
+		for(Coord pos : this){
+			copy.add(pos);
+		}
 		return copy;
 	}
 
+	
+	private class SphereIterator implements Iterator<Coord>{
+ 
+		private Coord centre;
+		private int radius;
+		
+		private int layer;
+		private int row;
+		private int col;
+		private Cardinal dir;
+		private boolean top;
+
+		
+		public SphereIterator(Coord centre, Coord end){
+			this.centre = new Coord(centre); 
+			Coord s = new Coord(centre);
+			Coord e = new Coord(end);
+			
+			Coord.correct(s, e);
+			Coord diff = e.sub(s);
+			
+			int r = diff.getX();
+			r = r < diff.getY() ? diff.getY() : r;
+			r = r < diff.getZ() ? diff.getZ() : r;
+			this.radius = r;
+			
+			layer = 0;
+			row = 0;
+			col = 0;
+			top = true;
+			
+
+			this.dir = Cardinal.NORTH;
+			
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return layer < radius;
+		}
+
+		@Override
+		public Coord next() {
+			Coord toReturn = new Coord(centre);
+			toReturn.add(top ? Cardinal.UP : Cardinal.DOWN, layer);
+			toReturn.add(dir, row);
+			toReturn.add(Cardinal.left(dir), col);
+			if(this.dir != Cardinal.NORTH || top){
+				if(this.dir == Cardinal.NORTH){
+					top = false;
+				}
+				dir = Cardinal.left(dir);
+				return toReturn;
+			}
+			
+			col += 1;
+			
+			Coord pos = new Coord(layer, row, col);
+			pos.add(this.centre);
+			if(pos.distance(centre) > radius){
+				col = 0;
+			} else {
+				dir = Cardinal.left(dir);
+				top = true;
+				return toReturn;
+			}
+			
+			row += 1;
+			
+			pos = new Coord(layer, row, col);
+			pos.add(this.centre);
+			if(pos.distance(centre) > radius){
+				row = 0;
+			} else {
+				dir = Cardinal.left(dir);
+				top = true;
+				return toReturn;
+			}
+			
+			layer += 1;
+			dir = Cardinal.left(dir);
+			top = true;
+			return toReturn;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
 }
