@@ -58,7 +58,6 @@ public class Sphere implements IShape {
 		private int col;
 		private Cardinal dir;
 		private boolean top;
-
 		
 		public SphereIterator(Coord centre, Coord end){
 			this.centre = new Coord(centre); 
@@ -106,24 +105,24 @@ public class Sphere implements IShape {
 			
 			Coord pos = new Coord(layer, row, col);
 			pos.add(this.centre);
-			if(pos.distance(centre) > radius){
-				col = 0;
-			} else {
+			if(inRange(pos)){
 				dir = Cardinal.left(dir);
 				top = true;
 				return toReturn;
+			} else {
+				col = 0;
 			}
 			
 			row += 1;
 			
 			pos = new Coord(layer, row, col);
 			pos.add(this.centre);
-			if(pos.distance(centre) > radius){
-				row = 0;
-			} else {
+			if(inRange(pos)){
 				dir = Cardinal.left(dir);
 				top = true;
 				return toReturn;
+			} else {
+				row = 0;
 			}
 			
 			layer += 1;
@@ -132,6 +131,16 @@ public class Sphere implements IShape {
 			return toReturn;
 		}
 
+		private boolean inRange(Coord pos){
+			int sum = pos.getX() + pos.getY() + pos.getZ();
+			if(sum < radius){
+				return true;
+			}
+			
+			return pos.distance(centre) < radius;
+			
+		}
+		
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException();
