@@ -50,12 +50,15 @@ public class Sphere implements IShape {
 	
 	private class SphereIterator implements Iterator<Coord>{
  
+		private final Coord zero = new Coord(0,0,0);
+		
 		private Coord centre;
 		private int radius;
 		
 		private int layer;
 		private int row;
 		private int col;
+
 		private Cardinal dir;
 		private boolean top;
 		
@@ -75,11 +78,10 @@ public class Sphere implements IShape {
 			layer = 0;
 			row = 0;
 			col = 0;
+			
 			top = true;
 			
-
 			this.dir = Cardinal.NORTH;
-			
 		}
 		
 		@Override
@@ -103,9 +105,7 @@ public class Sphere implements IShape {
 			
 			col += 1;
 			
-			Coord pos = new Coord(layer, row, col);
-			pos.add(this.centre);
-			if(inRange(pos)){
+			if(inRange(col, layer, row)){
 				dir = Cardinal.left(dir);
 				top = true;
 				return toReturn;
@@ -114,10 +114,8 @@ public class Sphere implements IShape {
 			}
 			
 			row += 1;
-			
-			pos = new Coord(layer, row, col);
-			pos.add(this.centre);
-			if(inRange(pos)){
+
+			if(inRange(col, layer, row)){
 				dir = Cardinal.left(dir);
 				top = true;
 				return toReturn;
@@ -130,15 +128,9 @@ public class Sphere implements IShape {
 			top = true;
 			return toReturn;
 		}
-
-		private boolean inRange(Coord pos){
-			int sum = pos.getX() + pos.getY() + pos.getZ();
-			if(sum < radius){
-				return true;
-			}
-			
-			return pos.distance(centre) < radius;
-			
+		
+		private boolean inRange(int x, int y, int z){
+			return 	x * x + y * y + z * z < radius * radius;
 		}
 		
 		@Override
