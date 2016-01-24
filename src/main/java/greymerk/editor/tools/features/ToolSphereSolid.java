@@ -7,7 +7,7 @@ import greymerk.editor.tools.ToolState;
 import greymerk.editor.worldgen.Cardinal;
 import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IWorldEditor;
-import greymerk.editor.worldgen.shapes.Sphere;
+import greymerk.editor.worldgen.shapes.Ellipsoid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
@@ -20,6 +20,6 @@ public class ToolSphereSolid implements ITool{
 			String msg = "Must set start point first";
 			player.addChatComponentMessage(new ChatComponentText(msg));
 		};
-		state.fill(editor, rand, new Sphere(start, pos));
+		state.fill(editor, rand, new Ellipsoid(start, pos));
 	}
 }
