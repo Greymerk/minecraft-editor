@@ -50,8 +50,6 @@ public class Sphere implements IShape {
 	
 	private class SphereIterator implements Iterator<Coord>{
  
-		private final Coord zero = new Coord(0,0,0);
-		
 		private Coord centre;
 		private int radius;
 		
@@ -78,9 +76,7 @@ public class Sphere implements IShape {
 			layer = 0;
 			row = 0;
 			col = 0;
-			
 			top = true;
-			
 			this.dir = Cardinal.NORTH;
 		}
 		
