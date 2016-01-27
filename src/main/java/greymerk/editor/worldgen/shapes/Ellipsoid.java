@@ -47,7 +47,6 @@ public class Ellipsoid implements IShape {
 		return copy;
 	}
 
-	
 	private class EllipsoidIterator implements Iterator<Coord>{
  
 		private Coord centre;
@@ -133,7 +132,7 @@ public class Ellipsoid implements IShape {
 			double ry = this.diff.getY() == 0 ? 1 : this.diff.getY();
 			double rz = this.diff.getZ() == 0 ? 1 : this.diff.getZ();
 			
-			return 	((x / rx) * (x / rx)) + 
+			return	((x / rx) * (x / rx)) + 
 					((y / ry) * (y / ry)) + 
 					((z / rz) * (z / rz))
 					<= 1;
