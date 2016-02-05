@@ -64,14 +64,14 @@ public class MetaBlock extends BlockBase implements IBlockState{
 	}
 
 	@Override
-	public <T extends Comparable<T>> T getValue(IProperty<T> property) {
-		return state.getValue(property);
+	public Comparable getValue(IProperty property) {
+		return this.state.getValue(property);
 	}
-	
+
 	@Override
-	public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value) {
-		this.state = this.state.withProperty(property, value);
-		return this.state;
+	public IBlockState withProperty(IProperty property, Comparable value) {
+		this.state.withProperty(property, value);
+		return state;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -103,9 +103,4 @@ public class MetaBlock extends BlockBase implements IBlockState{
 	public String toString(){
 		return this.state.getBlock().getUnlocalizedName();
 	}
-
-
-
-
-	
 }

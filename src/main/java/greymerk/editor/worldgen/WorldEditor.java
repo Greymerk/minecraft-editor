@@ -45,6 +45,12 @@ public class WorldEditor implements IWorldEditor{
 		}
 		
 		Block type = block.getBlock();
+		
+		world.playSoundEffect((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F), 
+				type.stepSound.getPlaceSound(), 
+				(type.stepSound.getVolume() + 1.0F) / 2.0F, 
+				type.stepSound.getFrequency() * 0.8F);
+		
 		Integer count = stats.get(type);
 		if(count == null){
 			stats.put(type, 1);	
