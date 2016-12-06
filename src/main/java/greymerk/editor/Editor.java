@@ -8,11 +8,11 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid="Editor", name="Greymerk's Editor", version=Editor.version, acceptableRemoteVersions="*")
+@Mod(modid="editor", name="Greymerk's Editor", version=Editor.version, acceptableRemoteVersions="*")
 
 public class Editor {
 	
-	@Instance("Editor")
+	@Instance("editor")
 	public static Editor instance;
 	public static final String version = "0.0.3";
 	

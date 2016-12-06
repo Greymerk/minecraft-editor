@@ -8,10 +8,14 @@ import java.util.Random;
 
 import greymerk.editor.worldgen.shapes.RectSolid;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
@@ -45,6 +49,18 @@ public class WorldEditor implements IWorldEditor{
 		}
 		
 		Block type = block.getBlock();
+		SoundType sound = type.getSoundType(block, world, pos.getBlockPos(), null);
+		
+		world.playSound(
+				(EntityPlayer)null,
+				(double)((float)pos.getX() + 0.5F), 
+				(double)((float)pos.getY() + 0.5F), 
+				(double)((float)pos.getZ() + 0.5F), 
+				sound.getPlaceSound(),
+				SoundCategory.BLOCKS,
+				(sound.getVolume() + 1.0F) / 2.0F, 
+				sound.getPitch() * 0.8F);
+		
 		Integer count = stats.get(type);
 		if(count == null){
 			stats.put(type, 1);	

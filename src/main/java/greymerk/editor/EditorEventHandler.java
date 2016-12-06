@@ -13,7 +13,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EditorEventHandler {
@@ -25,7 +25,7 @@ public class EditorEventHandler {
 	}
 	
 	@SubscribeEvent
-	public void interact(PlayerInteractEvent event){
+	public void interact(RightClickBlock event){
 		
 		EntityPlayer player = event.getEntityPlayer();
 		World world = player.worldObj;
