@@ -9,7 +9,7 @@ import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IWorldEditor;
 import greymerk.editor.worldgen.MetaBlock;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ToolAddBlock implements ITool {
 
@@ -18,7 +18,7 @@ public class ToolAddBlock implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.addBlock(editor, block);
 		String msg = "Block Added: " + block.getBlock().getLocalizedName();
-		player.addChatComponentMessage(new ChatComponentText(msg));		
+		player.addChatMessage(new TextComponentString(msg));		
 	}
 
 }

@@ -1,8 +1,8 @@
 package greymerk.editor.worldgen;
 
-import net.minecraft.util.BlockPos;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import net.minecraft.util.math.BlockPos;
 
 public class Coord{
 
@@ -47,12 +47,6 @@ public class Coord{
 		}		
 	}
 	
-	public void add(int x, int y, int z){
-		this.x += x;
-		this.y += y;
-		this.z += z;
-	}
-	
 	public Coord add(Coord other){
 		x += other.x;
 		y += other.y;
@@ -72,11 +66,10 @@ public class Coord{
 	}
 
 	public double distance(Coord other){
-		double xd = Math.abs(this.getX() - other.getX());
-		double yd = Math.abs(this.getY() - other.getY());
-		double zd = Math.abs(this.getZ() - other.getZ());
+		double side1 = Math.abs(this.getX() - other.getX());
+		double side2 = Math.abs(this.getZ() - other.getZ());
 		
-		return Math.sqrt((xd * xd) + (yd * yd) + (zd * zd));
+		return Math.sqrt((side1 * side1) + (side2 * side2));
 	}
 	
 	// Arranges two coords so that the they create a positive cube.
@@ -137,3 +130,4 @@ public class Coord{
 		return new BlockPos(this.x, this.y, this.z);
 	}
 }
+

@@ -10,7 +10,7 @@ import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IWorldEditor;
 import greymerk.editor.worldgen.MetaBlock;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ToolSingle implements ITool {
 
@@ -19,7 +19,7 @@ public class ToolSingle implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.METABLOCK, block);
 		String msg = "Brush set to: " + block.getBlock().getUnlocalizedName();
-		player.addChatComponentMessage(new ChatComponentText(msg));	
+		player.addChatMessage(new TextComponentString(msg));	
 	}
 
 }

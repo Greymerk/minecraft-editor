@@ -1,6 +1,7 @@
 package greymerk.editor.worldgen;
 
 
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -12,13 +13,12 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class WorldEditor implements IWorldEditor{
 	
 	World world;
 	private Map<Block, Integer> stats;
-
 	
 	public WorldEditor(World world){
 		this.world = world;
@@ -29,9 +29,9 @@ public class WorldEditor implements IWorldEditor{
 		
 		MetaBlock currentBlock = getBlock(pos);
 		
-		if(currentBlock.getBlock() == Blocks.chest) return false;
-		if(currentBlock.getBlock() == Blocks.trapped_chest) return false;
-		if(currentBlock.getBlock() == Blocks.mob_spawner) return false;
+		if(currentBlock.getBlock() == Blocks.CHEST) return false;
+		if(currentBlock.getBlock() == Blocks.TRAPPED_CHEST) return false;
+		if(currentBlock.getBlock() == Blocks.MOB_SPAWNER) return false;
 		
 		boolean isAir = world.isAirBlock(pos.getBlockPos());
 		
@@ -45,12 +45,6 @@ public class WorldEditor implements IWorldEditor{
 		}
 		
 		Block type = block.getBlock();
-		
-		world.playSoundEffect((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F), 
-				type.stepSound.getPlaceSound(), 
-				(type.stepSound.getVolume() + 1.0F) / 2.0F, 
-				type.stepSound.getFrequency() * 0.8F);
-		
 		Integer count = stats.get(type);
 		if(count == null){
 			stats.put(type, 1);	
@@ -78,13 +72,13 @@ public class WorldEditor implements IWorldEditor{
 	}
 	
 	@Override
-	public BiomeGenBase getBiome(Coord pos){
-		return world.getBiomeGenForCoords(pos.getBlockPos());
+	public Biome getBiome(Coord pos){
+		return world.getBiome(pos.getBlockPos());
 	}
 	
 	@Override
 	public int getDimension(){
-		return world.provider.getDimensionId();
+		return world.provider.getDimensionType().getId();
 	}
 	
 	@Override
@@ -95,7 +89,7 @@ public class WorldEditor implements IWorldEditor{
 	@Override
 	public void spiralStairStep(Random rand, Coord origin, IStair stair, IBlockFactory fill){
 		
-		MetaBlock air = new MetaBlock(Blocks.air);
+		MetaBlock air = BlockType.get(BlockType.AIR);
 		Coord cursor;
 		Coord start;
 		Coord end;
@@ -123,7 +117,7 @@ public class WorldEditor implements IWorldEditor{
 
 		Coord cursor = new Coord(origin);
 		
-		while(!getBlock(cursor).getBlock().getMaterial().isOpaque() && cursor.getY() > 1){
+		while(!getBlock(cursor).isOpaqueCube() && cursor.getY() > 1){
 			blocks.set(this, rand, cursor);
 			cursor.add(Cardinal.DOWN);
 		}
@@ -144,16 +138,16 @@ public class WorldEditor implements IWorldEditor{
 		
 		if(isAirBlock(pos)) return false;
 		
-		Block block = getBlock(pos).getBlock();
+		MetaBlock block = this.getBlock(pos);
 		
-		if(block.getMaterial() == Material.wood) return false;
-		if(block.getMaterial() == Material.water) return false;
-		if(block.getMaterial() == Material.cactus) return false;
-		if(block.getMaterial() == Material.snow) return false;
-		if(block.getMaterial() == Material.grass) return false;
-		if(block.getMaterial() == Material.gourd) return false;
-		if(block.getMaterial() == Material.leaves) return false;
-		if(block.getMaterial() == Material.plants) return false;
+		if(block.getMaterial() == Material.WOOD) return false;
+		if(block.getMaterial() == Material.WATER) return false;
+		if(block.getMaterial() == Material.CACTUS) return false;
+		if(block.getMaterial() == Material.SNOW) return false;
+		if(block.getMaterial() == Material.GRASS) return false;
+		if(block.getMaterial() == Material.GOURD) return false;
+		if(block.getMaterial() == Material.LEAVES) return false;
+		if(block.getMaterial() == Material.PLANTS) return false;
 		
 		return true;
 	}
@@ -175,6 +169,7 @@ public class WorldEditor implements IWorldEditor{
 		return this.stats.get(type);
 	}
 	
+
 	@Override
 	public boolean canPlace(MetaBlock block, Coord pos, Cardinal dir){
 		if(!this.isAirBlock(pos)) return false;

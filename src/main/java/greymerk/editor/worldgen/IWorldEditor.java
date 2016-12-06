@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public interface IWorldEditor {
 
@@ -16,7 +16,7 @@ public interface IWorldEditor {
 	
 	TileEntity getTileEntity(Coord pos);
 
-	BiomeGenBase getBiome(Coord pos);
+	Biome getBiome(Coord pos);
 	
 	int getDimension();
 	

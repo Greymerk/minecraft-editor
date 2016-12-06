@@ -8,7 +8,7 @@ import greymerk.editor.worldgen.Cardinal;
 import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IWorldEditor;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ToolToggleFillAir implements ITool {
 
@@ -16,6 +16,6 @@ public class ToolToggleFillAir implements ITool {
 	public void onClick(IWorldEditor editor, Random rand, EntityPlayer player, ToolState state, Cardinal dir, Coord pos) {
 		boolean fillAir = state.toggleFillAir();
 		String msg = "Fill Air: " + (fillAir ? "Yes" : "No");
-		player.addChatComponentMessage(new ChatComponentText(msg));
+		player.addChatMessage(new TextComponentString(msg));
 	}
 }

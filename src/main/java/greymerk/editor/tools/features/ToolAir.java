@@ -11,16 +11,16 @@ import greymerk.editor.worldgen.IWorldEditor;
 import greymerk.editor.worldgen.MetaBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ToolAir implements ITool {
 
 	@Override
 	public void onClick(IWorldEditor editor, Random rand, EntityPlayer player, ToolState state, Cardinal dir, Coord pos) {
-		MetaBlock block = new MetaBlock(Blocks.air);
+		MetaBlock block = new MetaBlock(Blocks.AIR);
 		state.init(BlockProvider.METABLOCK, block);
 		String msg = "Brush set to: Air";
-		player.addChatComponentMessage(new ChatComponentText(msg));	
+		player.addChatMessage(new TextComponentString(msg));	
 	}
 
 }

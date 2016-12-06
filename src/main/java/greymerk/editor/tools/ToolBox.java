@@ -12,7 +12,6 @@ import greymerk.editor.tools.features.ToolFillSolid;
 import greymerk.editor.tools.features.ToolJumble;
 import greymerk.editor.tools.features.ToolPlaceBlock;
 import greymerk.editor.tools.features.ToolSingle;
-import greymerk.editor.tools.features.ToolSpawner;
 import greymerk.editor.tools.features.ToolSphereSolid;
 import greymerk.editor.tools.features.ToolSquarePyramid;
 import greymerk.editor.tools.features.ToolStart;
@@ -26,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 
 public class ToolBox {
 
@@ -36,21 +36,20 @@ public class ToolBox {
 		
 		this.state = new ToolState();
 		tools = new HashMap<Item, ITool>();
-		tools.put(Items.quartz, new ToolBlockSet());
-		tools.put(Items.arrow, new ToolStart());
-		tools.put(Items.stick, new ToolFillSolid());
-		tools.put(Items.blaze_rod, new ToolFillHollow());
-		tools.put(Items.slime_ball, new ToolSphereSolid());
-		tools.put(Items.flint, new ToolSingle());
-		tools.put(Items.iron_ingot, new ToolJumble());
-		tools.put(Items.gold_ingot, new ToolStripes());
-		tools.put(Items.bone, new ToolAddBlock());
-		tools.put(Items.feather, new ToolAir());
-		tools.put(Items.ghast_tear, new ToolToggleFillAir());
-		tools.put(Items.gold_nugget, new ToolToggleReplaceSolid());
-		tools.put(Items.glowstone_dust, new ToolPlaceBlock());
-		tools.put(Items.sugar, new ToolSquarePyramid());
-		tools.put(Items.spawn_egg, new ToolSpawner());
+		tools.put(Items.QUARTZ, new ToolBlockSet());
+		tools.put(Items.ARROW, new ToolStart());
+		tools.put(Items.STICK, new ToolFillSolid());
+		tools.put(Items.BLAZE_ROD, new ToolFillHollow());
+		tools.put(Items.SLIME_BALL, new ToolSphereSolid());
+		tools.put(Items.FLINT, new ToolSingle());
+		tools.put(Items.IRON_INGOT, new ToolJumble());
+		tools.put(Items.GOLD_INGOT, new ToolStripes());
+		tools.put(Items.BONE, new ToolAddBlock());
+		tools.put(Items.FEATHER, new ToolAir());
+		tools.put(Items.GHAST_TEAR, new ToolToggleFillAir());
+		tools.put(Items.GOLD_NUGGET, new ToolToggleReplaceSolid());
+		tools.put(Items.GLOWSTONE_DUST, new ToolPlaceBlock());
+		tools.put(Items.SUGAR, new ToolSquarePyramid());
 	}
 	
 	public ITool get(Item item){
@@ -59,7 +58,7 @@ public class ToolBox {
 	}
 
 	public void action(WorldEditor editor, Random rand, EntityPlayer player, Cardinal dir, Coord pos) {
-		ItemStack held = player.getHeldItem();
+		ItemStack held = player.getHeldItem(EnumHand.MAIN_HAND);
 		if(held == null) return;
 		ITool tool = get(held.getItem());
 		if(tool == null) return;

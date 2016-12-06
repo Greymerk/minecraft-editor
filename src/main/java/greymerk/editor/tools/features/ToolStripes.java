@@ -10,7 +10,7 @@ import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.IWorldEditor;
 import greymerk.editor.worldgen.MetaBlock;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class ToolStripes implements ITool {
 
@@ -19,6 +19,6 @@ public class ToolStripes implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.STRIPES, block);
 		String msg = "New Stripes created";
-		player.addChatComponentMessage(new ChatComponentText(msg));
+		player.addChatMessage(new TextComponentString(msg));
 	}
 }

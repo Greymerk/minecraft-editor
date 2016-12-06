@@ -10,8 +10,10 @@ import greymerk.editor.worldgen.Coord;
 import greymerk.editor.worldgen.WorldEditor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EditorEventHandler {
@@ -25,18 +27,23 @@ public class EditorEventHandler {
 	@SubscribeEvent
 	public void interact(PlayerInteractEvent event){
 		
-		if(event.world.isRemote) return;
-		if(event.action == Action.RIGHT_CLICK_AIR) return;
-		if(event.action == Action.LEFT_CLICK_BLOCK) return;
+		EntityPlayer player = event.getEntityPlayer();
+		World world = player.worldObj;
 		
-		WorldEditor editor = new WorldEditor(event.world);
+		if(world.isRemote) return;
+		if(event.getHand() != EnumHand.MAIN_HAND) return;
+		
+		EnumFacing face = event.getFace();
+		if(face == null) return;
+		
+		WorldEditor editor = new WorldEditor(world);
 		Random rand = new Random();
 		
-		EntityPlayer player = event.entityPlayer;
-		Coord pos = new Coord(event.pos.getX(), event.pos.getY(), event.pos.getZ());
+		BlockPos ePos = event.getPos();
+		Coord pos = new Coord(ePos.getX(), ePos.getY(), ePos.getZ());
 		
 		ToolBox box = fetchBox(player);
-		EnumFacing face = event.face;
+		
 		Cardinal dir = Cardinal.getDirFromFace(face);
 		box.action(editor, rand, player, dir, pos);
 	}

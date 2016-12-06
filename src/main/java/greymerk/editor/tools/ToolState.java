@@ -26,7 +26,7 @@ public class ToolState {
 		this.brushes = new HashMap<BlockProvider, IBlockFactory>();
 		this.fillAir = true;
 		this.replaceSolid = true;
-		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.air));
+		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.AIR));
 	}
 	
 	public void setBlock(IWorldEditor editor, Random rand, Coord pos){
