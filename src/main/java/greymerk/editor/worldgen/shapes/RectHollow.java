@@ -44,8 +44,16 @@ public class RectHollow implements IShape {
 		Coord innerStart = new Coord(start);
 		Coord innerEnd = new Coord(end);
 		Coord.correct(innerStart, innerEnd);
+		
+		
+		Coord diff = new Coord(end);
+		diff.sub(start);
+		
+		if(diff.getX() < 2 || diff.getY() < 2 || diff.getZ() < 2) return;
+
 		innerStart.add(new Coord(1, 1, 1));
 		innerEnd.add(new Coord(-1, -1, -1));
+
 		RectSolid.fill(editor, rand, innerStart, innerEnd, BlockType.get(BlockType.AIR));
 	}
 

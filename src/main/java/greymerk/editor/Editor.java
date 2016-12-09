@@ -14,7 +14,7 @@ public class Editor {
 	
 	@Instance("editor")
 	public static Editor instance;
-	public static final String version = "0.0.3";
+	public static final String version = "0.1.2";
 	
 	EditorEventHandler events = new EditorEventHandler();
 	
