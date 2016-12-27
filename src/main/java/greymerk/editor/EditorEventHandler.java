@@ -28,7 +28,7 @@ public class EditorEventHandler {
 	public void interact(RightClickBlock event){
 		
 		EntityPlayer player = event.getEntityPlayer();
-		World world = player.worldObj;
+		World world = player.world;
 		
 		if(world.isRemote) return;
 		if(event.getHand() != EnumHand.MAIN_HAND) return;

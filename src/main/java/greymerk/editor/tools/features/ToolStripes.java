@@ -19,6 +19,6 @@ public class ToolStripes implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.STRIPES, block);
 		String msg = "New Stripes created";
-		player.addChatMessage(new TextComponentString(msg));
+		player.sendMessage(new TextComponentString(msg));
 	}
 }

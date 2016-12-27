@@ -16,6 +16,6 @@ public class ToolToggleReplaceSolid implements ITool {
 	public void onClick(IWorldEditor editor, Random rand, EntityPlayer player, ToolState state, Cardinal dir, Coord pos) {
 		boolean replaceSolid = state.toggleReplaceSolid();
 		String msg = "Replace Solid: " + (replaceSolid ? "Yes" : "No");
-		player.addChatMessage(new TextComponentString(msg));
+		player.sendMessage(new TextComponentString(msg));
 	}
 }

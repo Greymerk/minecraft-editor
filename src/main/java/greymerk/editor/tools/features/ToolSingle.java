@@ -19,7 +19,7 @@ public class ToolSingle implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.METABLOCK, block);
 		String msg = "Brush set to: " + block.getBlock().getUnlocalizedName();
-		player.addChatMessage(new TextComponentString(msg));	
+		player.sendMessage(new TextComponentString(msg));	
 	}
 
 }

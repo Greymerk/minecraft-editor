@@ -18,7 +18,7 @@ public class ToolFillHollow implements ITool {
 		Coord start = state.getStart();
 		if(start == null){
 			String msg = "Must set start point first";
-			player.addChatMessage(new TextComponentString(msg));
+			player.sendMessage(new TextComponentString(msg));
 		};
 		state.fill(editor, rand, new RectHollow(start, pos));
 	}

@@ -19,7 +19,7 @@ public class ToolJumble implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.JUMBLE, block);
 		String msg = "New Jumble created";
-		player.addChatMessage(new TextComponentString(msg));
+		player.sendMessage(new TextComponentString(msg));
 	}
 
 }

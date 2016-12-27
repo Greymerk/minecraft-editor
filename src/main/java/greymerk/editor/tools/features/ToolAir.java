@@ -20,7 +20,7 @@ public class ToolAir implements ITool {
 		MetaBlock block = new MetaBlock(Blocks.AIR);
 		state.init(BlockProvider.METABLOCK, block);
 		String msg = "Brush set to: Air";
-		player.addChatMessage(new TextComponentString(msg));	
+		player.sendMessage(new TextComponentString(msg));	
 	}
 
 }

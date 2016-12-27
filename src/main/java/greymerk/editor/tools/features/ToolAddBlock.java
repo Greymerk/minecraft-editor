@@ -18,7 +18,7 @@ public class ToolAddBlock implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.addBlock(editor, block);
 		String msg = "Block Added: " + block.getBlock().getLocalizedName();
-		player.addChatMessage(new TextComponentString(msg));		
+		player.sendMessage(new TextComponentString(msg));		
 	}
 
 }
