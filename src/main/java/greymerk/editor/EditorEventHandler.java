@@ -33,6 +33,8 @@ public class EditorEventHandler {
 		if(world.isRemote) return;
 		if(event.getHand() != EnumHand.MAIN_HAND) return;
 		
+		if(!player.isCreative()) return;
+		
 		EnumFacing face = event.getFace();
 		if(face == null) return;
 		
