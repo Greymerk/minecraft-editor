@@ -19,6 +19,7 @@ public class ToolSquarePyramid implements ITool{
 		if(start == null){
 			String msg = "Must set start point first";
 			player.sendMessage(new TextComponentString(msg));
+			return;
 		};
 		state.fill(editor, rand, new RectPyramid(start, pos));
 	}
