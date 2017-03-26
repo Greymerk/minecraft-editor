@@ -15,13 +15,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
 public class EditorEventHandler {
 
-	Map<EntityPlayer, ToolBox> boxes;
+	public static Map<String, ToolBox> boxes;
+	
+	static{
+		boxes = new HashMap<String, ToolBox>();
+	}
 	
 	public EditorEventHandler(){
-		boxes = new HashMap<EntityPlayer, ToolBox>();
+		
 	}
 	
 	@SubscribeEvent
@@ -50,12 +56,25 @@ public class EditorEventHandler {
 		box.action(editor, rand, player, dir, pos);
 	}
 	
+	@SubscribeEvent
+	public void tickPlayer(PlayerTickEvent event){
+	
+	}
+	
+	@SubscribeEvent
+	public void onServerTick(TickEvent.ServerTickEvent event) {
+		for(ToolBox box : EditorEventHandler.boxes.values()){
+			box.process(100);	
+		}		
+	}
+	
 	private ToolBox fetchBox(EntityPlayer player){
+		String name = player.getName();
 		
-		if(!boxes.containsKey(player)){
-			boxes.put(player, new ToolBox());
+		if(!boxes.containsKey(name)){
+			boxes.put(name, new ToolBox());
 		}
-			
-		return boxes.get(player);
+		
+		return boxes.get(name);
 	}
 }

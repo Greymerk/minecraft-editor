@@ -13,6 +13,7 @@ import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -35,33 +36,47 @@ public class MetaBlock extends BlockBase implements IBlockState{
 	private int flag;
     
 	public MetaBlock(Block block){
-		this.state = block.getDefaultState();
+		this.setState(block.getDefaultState());
+		flag = 2;
+	}
+	
+	public MetaBlock(MetaBlock block){
+		this.setState(block);
 		flag = 2;
 	}
 	
 	public MetaBlock(IBlockState state){
-		this.state = state;
+		this.setState(state);
 		flag = 2;
 	}
 	
 	
 	public MetaBlock(Block block, IProperty<?> ... properties){
 		BlockStateContainer s = new BlockStateContainer(block, properties);
-		this.state = s.getBaseState();
+		this.setState(s.getBaseState());
 	}
 	
 	@SuppressWarnings("deprecation")
-	public MetaBlock(JsonElement e){
+	public MetaBlock(JsonElement e) throws Exception{
 		JsonObject json = (JsonObject)e;
 		String name = json.get("name").getAsString();
 		ResourceLocation location = new ResourceLocation(name);
+		if(!Block.REGISTRY.containsKey(location)){
+			throw new Exception("No such block: " + name);
+		}
 		Block block = (Block) Block.REGISTRY.getObject(location);
 		int meta = json.has("meta") ? json.get("meta").getAsInt() : 0;
-		this.state = block.getStateFromMeta(meta);
+		this.setState(block.getStateFromMeta(meta));
 		flag = json.has("flag") ? json.get("flag").getAsInt() : 2;
 	}
 	
 	public void setState(IBlockState state){
+		
+		if(state instanceof MetaBlock){
+			this.state = ((MetaBlock)state).getState();
+			return;
+		}
+		
 		this.state = state;
 	}
 
@@ -91,12 +106,17 @@ public class MetaBlock extends BlockBase implements IBlockState{
 	}
 
 	public IBlockState getState(){
-		return this.state;
+		
+		if(this.state instanceof MetaBlock){
+			return ((MetaBlock)this.state).getState();
+		}
+		
+		return (BlockStateBase)this.state;
 	}
 	
 	@Override
 	public Block getBlock() {
-		return this.state.getBlock();
+		return this.getState().getBlock();
 	}
 	
 	public int getFlag(){
@@ -213,6 +233,8 @@ public class MetaBlock extends BlockBase implements IBlockState{
 		return this.state.getSelectedBoundingBox(p_185890_1_, p_185890_2_);
 	}
 
+
+
 	@Override
 	public ImmutableMap<IProperty<?>, Comparable<?>> getProperties() {
 		return this.state.getProperties();
@@ -247,6 +269,8 @@ public class MetaBlock extends BlockBase implements IBlockState{
 	public boolean shouldSideBeRendered(IBlockAccess blockAccess, BlockPos pos, EnumFacing facing) {
 		return this.state.shouldSideBeRendered(blockAccess, pos, facing);
 	}
+
+
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos) {
@@ -332,5 +356,14 @@ public class MetaBlock extends BlockBase implements IBlockState{
 	public Collection<IProperty<?>> getPropertyKeys() {
 		return this.state.getPropertyKeys();
 	}
-
+	
+	@Override
+	public boolean equals(Object other){
+		if(other == this) return true; 
+		if(other == null) return false;
+		if(!(other instanceof MetaBlock)) return false;		
+		
+		MetaBlock otherBlock = (MetaBlock)other;
+		return this.getState().equals(otherBlock.getState());
+	}
 }

@@ -1,5 +1,9 @@
 package greymerk.editor;
 
+import greymerk.editor.util.CommandEditor;
+import net.minecraft.command.ICommandManager;
+import net.minecraft.command.ServerCommandManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -27,6 +31,12 @@ public class Editor {
 	
 	@EventHandler
 	public void serverStart(FMLServerStartingEvent event){
-		
+		MinecraftServer server = event.getServer();
+		ICommandManager command = server.getCommandManager();
+		ServerCommandManager serverCommand = ((ServerCommandManager) command);
+		serverCommand.registerCommand(new CommandEditor());
 	}
+	
+	
+	
 }

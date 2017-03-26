@@ -1,6 +1,9 @@
 package greymerk.editor.tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -22,11 +25,14 @@ public class ToolState {
 	private boolean replaceSolid;
 	private Coord start;
 	
+	private List<ToolTask> tasks;
+	
 	public ToolState(){
 		this.brushes = new HashMap<BlockProvider, IBlockFactory>();
 		this.fillAir = true;
 		this.replaceSolid = true;
 		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.AIR));
+		tasks = new ArrayList<ToolTask>();
 	}
 	
 	public void setBlock(IWorldEditor editor, Random rand, Coord pos){
@@ -42,7 +48,10 @@ public class ToolState {
 	}
 	
 	public void fill(IWorldEditor editor, Random rand, IShape shape){
-		shape.fill(editor, rand, brushes.get(this.type), fillAir, replaceSolid);
+		//shape.fill(editor, rand, brushes.get(this.type), fillAir, replaceSolid);
+		ToolTask task = new ToolTask(editor, rand, shape, brushes.get(this.type), fillAir, replaceSolid);
+		
+		this.tasks.add(task);
 		start = null;
 	}
 	
@@ -90,5 +99,24 @@ public class ToolState {
 	public boolean toggleReplaceSolid(){
 		this.replaceSolid = !this.replaceSolid;
 		return this.replaceSolid;
+	}
+
+	public boolean hasNext(){
+		return !this.tasks.isEmpty();
+	}
+	
+	public void process(){
+		
+		Iterator<ToolTask> iter = tasks.iterator();
+		
+		while(iter.hasNext()){
+			ToolTask task = iter.next();
+			
+			task.process();
+			
+			if(!task.hasNext()){
+				iter.remove();
+			}
+		}
 	}
 }

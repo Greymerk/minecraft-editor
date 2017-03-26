@@ -32,6 +32,7 @@ public class ToolBox {
 	ToolState state;
 	Map<Item, ITool> tools;
 	
+	
 	public ToolBox(){
 		
 		this.state = new ToolState();
@@ -65,4 +66,11 @@ public class ToolBox {
 		tool.onClick(editor,  rand, player, state, dir, pos);
 	}
 	
+	public void process(int count){
+		if(!this.state.hasNext()) return;
+		
+		for(int i = 0; i < count; ++i){
+			this.state.process();	
+		}
+	}
 }

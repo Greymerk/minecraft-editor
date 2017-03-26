@@ -10,7 +10,6 @@ import greymerk.editor.worldgen.shapes.RectSolid;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -28,7 +27,7 @@ public class WorldEditor implements IWorldEditor{
 		stats = new HashMap<Block, Integer>();
 	}
 	
-	private boolean setBlock(Coord pos, IBlockState block, int flags, boolean fillAir, boolean replaceSolid){
+	private boolean setBlock(Coord pos, MetaBlock block, int flags, boolean fillAir, boolean replaceSolid){
 		
 		MetaBlock currentBlock = getBlock(pos);
 		
@@ -42,7 +41,7 @@ public class WorldEditor implements IWorldEditor{
 		if(!replaceSolid && !isAir)	return false;
 		
 		try{
-			world.setBlockState(pos.getBlockPos(), block, flags);
+			world.setBlockState(pos.getBlockPos(), block.getState(), flags);
 		} catch(NullPointerException npe){
 			//ignore it.
 		}
@@ -73,7 +72,7 @@ public class WorldEditor implements IWorldEditor{
 	
 	@Override
 	public boolean setBlock(Coord pos, MetaBlock block, boolean fillAir, boolean replaceSolid){
-		return this.setBlock(pos, block.getState(), block.getFlag(), fillAir, replaceSolid);
+		return this.setBlock(pos, block, block.getFlag(), fillAir, replaceSolid);
 	}
 	
 	@Override
