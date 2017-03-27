@@ -73,4 +73,12 @@ public class ToolBox {
 			this.state.process();	
 		}
 	}
+	
+	public void undo(){
+		this.state.undo();
+	}
+	
+	public void redo(){
+		this.state.redo();
+	}
 }

@@ -1,8 +1,10 @@
 package greymerk.editor.tools;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -25,14 +27,16 @@ public class ToolState {
 	private boolean replaceSolid;
 	private Coord start;
 	
-	private List<ToolTask> tasks;
+	private Deque<ToolTask> tasks;
+	private Deque<ToolTask> redo;
 	
 	public ToolState(){
 		this.brushes = new HashMap<BlockProvider, IBlockFactory>();
 		this.fillAir = true;
 		this.replaceSolid = true;
 		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.AIR));
-		tasks = new ArrayList<ToolTask>();
+		tasks = new LinkedList<ToolTask>();
+		redo = new LinkedList<ToolTask>();
 	}
 	
 	public void setBlock(IWorldEditor editor, Random rand, Coord pos){
@@ -52,6 +56,10 @@ public class ToolState {
 		ToolTask task = new ToolTask(editor, rand, shape, brushes.get(this.type), fillAir, replaceSolid);
 		
 		this.tasks.add(task);
+		redo = new LinkedList<ToolTask>();
+		if(tasks.size() > 20){
+			tasks.removeFirst();
+		}
 		start = null;
 	}
 	
@@ -102,21 +110,45 @@ public class ToolState {
 	}
 
 	public boolean hasNext(){
-		return !this.tasks.isEmpty();
+		
+		for(ToolTask task : this.tasks){
+			if(!task.isDone()) return true;
+		}
+		
+		for(ToolTask task : this.redo){
+			if(!task.isDone()) return true;
+		}
+		
+		return false;
 	}
 	
 	public void process(){
 		
-		Iterator<ToolTask> iter = tasks.iterator();
+		Iterator<ToolTask> taskiter = tasks.iterator();
+		Iterator<ToolTask> redoiter = redo.iterator();
 		
-		while(iter.hasNext()){
-			ToolTask task = iter.next();
-			
-			task.process();
-			
-			if(!task.hasNext()){
-				iter.remove();
-			}
+		while(taskiter.hasNext()){
+			taskiter.next().process();
 		}
+		
+		while(redoiter.hasNext()){
+			redoiter.next().process();
+		}
+	}
+	
+	public void undo(){
+		if(this.tasks.isEmpty()) return;
+		
+		ToolTask task = this.tasks.removeLast();
+		task.rollback();
+		this.redo.push(task);
+	}
+	
+	public void redo(){
+		if(this.redo.isEmpty()) return;
+		
+		ToolTask task = this.redo.pop();
+		task.apply();
+		this.tasks.add(task);
 	}
 }

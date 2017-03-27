@@ -1,6 +1,7 @@
 package greymerk.editor.util;
 
 import greymerk.editor.EditorEventHandler;
+import greymerk.editor.tools.ToolBox;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -26,6 +27,22 @@ public class CommandEditor extends CommandBase {
 		if(ap.match(0, "boxes")){
 			int count = EditorEventHandler.boxes.keySet().size();
 			sender.sendMessage(new TextComponentString(TextFormat.apply("Boxes: " + count, TextFormat.GOLD)));
+		}
+		
+		if(ap.match(0, "undo")){
+			String name = sender.getName();
+			ToolBox box = EditorEventHandler.boxes.get(name);
+			if(box == null) return;
+			box.undo();
+			return;
+		}
+		
+		if(ap.match(0, "redo")){
+			String name = sender.getName();
+			ToolBox box = EditorEventHandler.boxes.get(name);
+			if(box == null) return;
+			box.redo();
+			return;
 		}
 		
 	}
