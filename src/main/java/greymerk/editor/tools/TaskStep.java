@@ -41,6 +41,6 @@ public class TaskStep {
 	}
 	
 	public void undo(){
-		original.set(editor, rand, pos, fillAir, replaceSolid);
+		original.set(editor, rand, pos, true, true);
 	}
 }
