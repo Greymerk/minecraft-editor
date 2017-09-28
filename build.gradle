@@ -12,7 +12,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.12.1-0.1.6"
+version = "1.12.2-0.1.7"
 group= "ca.rivas.editor" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "editor"
 
@@ -22,7 +22,7 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12.1-14.22.0.2444"
+    version = "1.12.2-14.23.0.2489"
     runDir = "run"
 	mappings = "snapshot_20170624"
 	makeObfSourceJar = false
