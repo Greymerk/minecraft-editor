@@ -9,6 +9,7 @@ import greymerk.editor.tools.features.ToolAir;
 import greymerk.editor.tools.features.ToolBlockSet;
 import greymerk.editor.tools.features.ToolFillHollow;
 import greymerk.editor.tools.features.ToolFillSolid;
+import greymerk.editor.tools.features.ToolFillWireframe;
 import greymerk.editor.tools.features.ToolJumble;
 import greymerk.editor.tools.features.ToolPlaceBlock;
 import greymerk.editor.tools.features.ToolSingle;
@@ -51,6 +52,7 @@ public class ToolBox {
 		tools.put(Items.GOLD_NUGGET, new ToolToggleReplaceSolid());
 		tools.put(Items.GLOWSTONE_DUST, new ToolPlaceBlock());
 		tools.put(Items.SUGAR, new ToolSquarePyramid());
+		tools.put(Items.BRICK, new ToolFillWireframe());
 	}
 	
 	public ITool get(Item item){

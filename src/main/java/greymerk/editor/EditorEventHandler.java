@@ -64,7 +64,7 @@ public class EditorEventHandler {
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event) {
 		for(ToolBox box : EditorEventHandler.boxes.values()){
-			box.process(50);	
+			box.process(1);	
 		}		
 	}
 	
