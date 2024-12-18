@@ -18,7 +18,7 @@ public class ToolFillSolid implements ITool{
 		Coord start = state.getStart();
 		if(start == null){
 			String msg = "Must set start point first";
-			player.sendMessage(Text.of(msg));
+			player.sendMessage(Text.of(msg), true);
 			return;
 		};
 		state.fill(editor, rand, new RectSolid(start, pos));

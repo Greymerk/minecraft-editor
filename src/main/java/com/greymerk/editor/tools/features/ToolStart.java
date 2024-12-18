@@ -17,6 +17,6 @@ public class ToolStart implements ITool {
 	public void onClick(IWorldEditor editor, Random rand, PlayerEntity player, ToolState state, Cardinal dir, Coord pos) {
 		state.setStart(pos);
 		String msg = "Start set to: " + pos.toString();
-		player.sendMessage(Text.of(msg));
+		player.sendMessage(Text.of(msg), true);
 	}
 }

@@ -17,6 +17,6 @@ public class ToolToggleFillAir implements ITool {
 	public void onClick(IWorldEditor editor, Random rand, PlayerEntity player, ToolState state, Cardinal dir, Coord pos) {
 		boolean fillAir = state.toggleFillAir();
 		String msg = "Fill Air: " + (fillAir ? "Yes" : "No");
-		player.sendMessage(Text.of(msg));
+		player.sendMessage(Text.of(msg), true);
 	}
 }

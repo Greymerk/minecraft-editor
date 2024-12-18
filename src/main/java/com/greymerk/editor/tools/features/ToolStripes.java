@@ -20,6 +20,6 @@ public class ToolStripes implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.STRIPES, block);
 		String msg = "New Stripes started with " + block.getName();
-		player.sendMessage(Text.of(msg));
+		player.sendMessage(Text.of(msg), true);
 	}
 }

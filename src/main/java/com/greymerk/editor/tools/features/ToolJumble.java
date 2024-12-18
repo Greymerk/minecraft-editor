@@ -19,7 +19,7 @@ public class ToolJumble implements ITool {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.JUMBLE, block);
 		String msg = "New Jumble started with " + block.getName();
-		player.sendMessage(Text.of(msg));
+		player.sendMessage(Text.of(msg), true);
 	}
 
 }
