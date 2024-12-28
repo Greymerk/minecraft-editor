@@ -12,6 +12,7 @@ import com.greymerk.editor.tools.features.ToolBlockSet;
 import com.greymerk.editor.tools.features.ToolFillHollow;
 import com.greymerk.editor.tools.features.ToolFillSolid;
 import com.greymerk.editor.tools.features.ToolFillWireframe;
+import com.greymerk.editor.tools.features.ToolGrid;
 import com.greymerk.editor.tools.features.ToolJumble;
 import com.greymerk.editor.tools.features.ToolPlaceBlock;
 import com.greymerk.editor.tools.features.ToolSingle;
@@ -44,6 +45,7 @@ public class ToolBox {
 		tools.put(Items.BLAZE_ROD, new ToolFillHollow());
 		tools.put(Items.SLIME_BALL, new ToolSphereSolid());
 		tools.put(Items.FLINT, new ToolSingle());
+		tools.put(Items.AMETHYST_SHARD, new ToolGrid());
 		tools.put(Items.IRON_INGOT, new ToolJumble());
 		tools.put(Items.GOLD_INGOT, new ToolStripes());
 		tools.put(Items.BONE, new ToolAddBlock());

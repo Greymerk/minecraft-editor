@@ -10,6 +10,7 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 import com.greymerk.editor.editor.MetaBlock;
+import com.greymerk.editor.editor.factories.BlockGrid;
 import com.greymerk.editor.editor.factories.BlockJumble;
 import com.greymerk.editor.editor.factories.BlockProvider;
 import com.greymerk.editor.editor.factories.BlockStripes;
@@ -78,6 +79,9 @@ public class ToolState {
 			jumble.addBlock(block);
 			this.brushes.put(type, jumble);
 			return;
+		case GRID:
+			BlockGrid grid = new BlockGrid(block);
+			this.brushes.put(type, grid);
 		default: return;
 		}
 	}

@@ -2,7 +2,7 @@ package com.greymerk.editor.editor.factories;
 
 public enum BlockProvider {
 	
-	METABLOCK, WEIGHTED, CHECKERS, JUMBLE, STRIPES, LAYERS, COLUMNS;
+	METABLOCK, WEIGHTED, CHECKERS, JUMBLE, STRIPES, LAYERS, COLUMNS, GRID;
 
 	/*
 	public static IBlockFactory create(JsonObject block) throws Exception {
