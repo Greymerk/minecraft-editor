@@ -32,9 +32,9 @@ public class Coord {
 	}
 	
 	public Coord(NbtCompound tag){
-		this.x = tag.getInt("x");
-		this.y = tag.getInt("y");
-		this.z = tag.getInt("z");
+		this.x = tag.getInt("x").get();
+		this.y = tag.getInt("y").get();
+		this.z = tag.getInt("z").get();
 	}
 	
 	public Coord(BlockPos bp){

@@ -26,8 +26,8 @@ public class BoundingBox implements IBounded{
 	}
 	
 	public BoundingBox(NbtCompound tag) {
-		this.start = new Coord(tag.getCompound("start"));
-		this.end = new Coord(tag.getCompound("end"));
+		this.start = new Coord(tag.getCompound("start").get());
+		this.end = new Coord(tag.getCompound("end").get());
 		Coord.correct(this.start, this.end);
 	}
 
