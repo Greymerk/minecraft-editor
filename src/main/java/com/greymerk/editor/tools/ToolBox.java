@@ -61,6 +61,14 @@ public class ToolBox {
 		if(!tools.containsKey(item)) return null;
 		return tools.get(item);
 	}
+	
+	public boolean holdingTool(PlayerEntity player) {
+		ItemStack held = player.getMainHandStack();
+		if(held == null) return false;
+		ITool tool = get(held.getItem());
+		if(tool == null) return false;
+		return true;
+	}
 
 	public void action(IWorldEditor editor, Random rand, PlayerEntity player, Cardinal dir, Coord pos) {
 		ItemStack held = player.getMainHandStack();
@@ -68,6 +76,13 @@ public class ToolBox {
 		ITool tool = get(held.getItem());
 		if(tool == null) return;
 		tool.onClick(editor,  rand, player, state, dir, pos);
+	}
+	
+	public void process() {
+		if(!this.state.hasNext()) return;
+		while(this.state.hasNext()) {
+			state.process();	
+		}
 	}
 	
 	public void process(int count){

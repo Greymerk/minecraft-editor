@@ -51,17 +51,19 @@ public class GreyEdit implements ModInitializer{
 			IWorldEditor editor = new WorldEditor(world);
 			ToolBox tools = boxes.get(playerID);
 			
+			if(!tools.holdingTool(player)) return ActionResult.PASS;
+			
 			Coord pos = new Coord(hitResult.getBlockPos());
 			Cardinal dir = Cardinal.fromDirection(hitResult.getSide());
 			tools.action(editor, editor.getRandom(pos), player, dir, pos);
-			return ActionResult.PASS;
+			return ActionResult.SUCCESS_SERVER;
 		}
 	}
 	
 	private class OnWorldTick implements ServerTickEvents.EndWorldTick{
 		@Override
 		public void onEndTick(ServerWorld world) {
-			boxes.values().forEach(tb -> tb.process(1));
+			boxes.values().forEach(tb -> tb.process());
 		}
 	}
 }
