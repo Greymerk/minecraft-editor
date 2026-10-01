@@ -1,31 +1,42 @@
 package com.greymerk.editor.util;
 
-import net.minecraft.server.world.ServerChunkManager;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
-import net.minecraft.world.gen.chunk.placement.SpreadType;
-import net.minecraft.world.gen.chunk.placement.StructurePlacement;
-import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public enum StructureLocator {
+import com.greymerk.editor.editor.Coord;
+import com.greymerk.editor.editor.IWorldEditor;
 
-	VILLAGE, STRONGHOLD;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
+
+
+public class StructureLocator {
+
+	public static List<ResourceKey<StructureSet>> UNDERGROUND = List.of(BuiltinStructureSets.TRIAL_CHAMBERS);
 	
-	public static StructurePlacement getPlacement(StructureLocator type) {
-		
-		switch(type) {
-		//case STRONGHOLD: return new ConcentricRingsStructurePlacement(32, 3, 128, registryEntryLookup2.getOrThrow(BiomeTags.STRONGHOLD_BIASED_TO));
-		case VILLAGE: return new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 10387312);
-		default:
-			return null;
-		}
+	public static boolean hasVillage(IWorldEditor editor, ChunkPos cpos) {
+		return hasStructure(editor, BuiltinStructureSets.VILLAGES, cpos);
 	}
 	
-	public static boolean hasVillage(ServerWorld overworld, long seed, ChunkPos cpos) {
-		ServerChunkManager cm = overworld.getChunkManager();
-		StructurePlacement placement = (StructurePlacement)new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 10387312);
-		StructurePlacementCalculator calc = cm.getStructurePlacementCalculator();
-		return placement.shouldGenerate(calc, cpos.x, cpos.z);
+	public static boolean hasStructure(IWorldEditor editor, ResourceKey<StructureSet> type, ChunkPos cpos) {
+		return editor.getStructureLocation(type, cpos).isPresent();
+	}
+	
+	public static Set<Coord> scan(IWorldEditor editor, Coord origin, List<ResourceKey<StructureSet>> types, int range){
+		Set<Coord> locations = new HashSet<Coord>();
+		
+		ChunkSet chunks = new ChunkSet(origin, range);
+		chunks.forEach(cpos -> {
+			types.forEach(type -> {
+				editor.getStructureLocation(type, cpos).ifPresent(pos -> {
+					locations.add(pos);
+				});
+			});
+		});
+		
+		return locations;
 	}
 }

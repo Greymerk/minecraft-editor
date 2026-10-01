@@ -8,26 +8,30 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class Line implements IShape{
 
 	Coord start;
 	Coord end;
 	
+	public static Line of(Coord start, Coord end) {
+		return new Line(start, end);
+	}
 	
 	public Line(Coord start, Coord end){
-		this.start = new Coord(start);
-		this.end = new Coord(end);
+		this.start = start.copy();
+		this.end = end.copy();
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block) {
 		this.fill(editor, rand, block, true, true);
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
 		for(Coord c : this){
 			block.set(editor, rand, c, fillAir, replaceSolid);
 		}
@@ -47,6 +51,7 @@ public class Line implements IShape{
 		return new LineIterator();
 	}
 	
+	// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 	private class LineIterator implements Iterator<Coord>{
 		
 		int x; int y; int z;
@@ -60,7 +65,7 @@ public class Line implements IShape{
 		
 		public LineIterator(){
 			
-			this.current = new Coord(start);
+			this.current = start.copy();
 			
 			x = start.getX();
 			y = start.getY();
@@ -156,7 +161,7 @@ public class Line implements IShape{
 			
 			++counter;
 			
-			Coord toReturn = new Coord(this.current);
+			Coord toReturn = this.current.copy();
 			this.current = new Coord(x, y, z);
 			return toReturn;
 		}

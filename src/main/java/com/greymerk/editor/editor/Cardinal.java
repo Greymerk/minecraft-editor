@@ -5,12 +5,13 @@ import java.util.List;
 
 import com.greymerk.editor.util.math.RandHelper;
 
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 
 public enum Cardinal {
 	NORTH, EAST, WEST, SOUTH, UP, DOWN;
 	
+	public static final List<Cardinal> all = Arrays.asList(new Cardinal[] {NORTH, EAST, SOUTH, WEST, UP, DOWN});
 	public static final List<Cardinal> directions = Arrays.asList(new Cardinal[] {NORTH, EAST, SOUTH, WEST});
 	
 	public static Cardinal reverse(Cardinal dir){
@@ -42,6 +43,16 @@ public enum Cardinal {
 		case SOUTH: return WEST;
 		case WEST: return NORTH;
 		default: return dir;
+		}
+	}
+	
+	public static List<Cardinal> parallel(Cardinal dir){
+		switch(dir){
+		case NORTH: return List.of(NORTH, SOUTH);
+		case SOUTH: return List.of(SOUTH, NORTH);
+		case EAST: return List.of(EAST, WEST);
+		case WEST: return List.of(WEST, EAST);
+		default: return List.of(dir, dir);
 		}
 	}
 	
@@ -81,21 +92,26 @@ public enum Cardinal {
 		}
 	}
 	
-	public static Cardinal fromDirection(Direction d) {
-		switch(d) {
-		case DOWN: return Cardinal.DOWN;
-		case EAST: return Cardinal.EAST;
-		case NORTH: return Cardinal.NORTH;
-		case SOUTH: return Cardinal.SOUTH;
-		case UP: return Cardinal.UP;
-		case WEST: return Cardinal.WEST;
-		default: return Cardinal.DOWN;
-		}
-	}
-	
-	public static List<Cardinal> randDirs(Random rand){
+	public static List<Cardinal> randDirs(RandomSource rand){
 		List<Cardinal> dirs = Arrays.asList(new Cardinal[] {NORTH, EAST, SOUTH, WEST});
 		RandHelper.shuffle(Arrays.asList(dirs), rand);
 		return dirs;
+	}
+
+	public static Cardinal randDir(RandomSource rand) {
+		return directions.get(rand.nextInt(directions.size()));
+	}
+	
+	public static Cardinal of(Direction direction) {
+		switch(direction) {
+		case DOWN: return Cardinal.UP;
+		case EAST: return Cardinal.WEST;
+		case NORTH: return Cardinal.SOUTH;
+		case SOUTH: return Cardinal.NORTH;
+		case UP: return Cardinal.DOWN;
+		case WEST: return Cardinal.EAST;
+		default: return null;
+		}
+		
 	}
 }

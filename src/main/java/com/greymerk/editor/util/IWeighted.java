@@ -1,11 +1,11 @@
 package com.greymerk.editor.util;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
 
 public interface IWeighted<T> {
 
 	public int getWeight();
 	
-	public T get(Random rand);
+	public T get(RandomSource rand);
 		
 }

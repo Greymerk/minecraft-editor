@@ -1,7 +1,7 @@
 package com.greymerk.editor.editor.blocks.slab;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 public enum Slab {
 
@@ -53,6 +53,10 @@ public enum Slab {
 	}
 	
 	public static ISlab get(Slab type) {
+		return get(type, false);
+	}
+	
+	public static ISlab of(Slab type) {
 		return get(type, false);
 	}
 }

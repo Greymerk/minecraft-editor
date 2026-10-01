@@ -2,22 +2,22 @@ package com.greymerk.editor.editor;
 
 import com.greymerk.editor.editor.shapes.IShape;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
 
 public abstract class BlockBase implements IBlockFactory {
 	
 	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord pos) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord pos) {
 		return set(editor, rand, pos, true, true);
 	}
 	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IShape shape){
+	public void fill(IWorldEditor editor, RandomSource rand, IShape shape){
 		shape.fill(editor, rand, this, true, true);
 	}
 	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IShape shape, boolean fillAir, boolean replaceSolid){
+	public void fill(IWorldEditor editor, RandomSource rand, IShape shape, boolean fillAir, boolean replaceSolid){
 		shape.fill(editor, rand, this, fillAir, replaceSolid);
 	}
 }

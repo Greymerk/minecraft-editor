@@ -8,32 +8,33 @@ import com.greymerk.editor.editor.Cardinal;
 import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
+import com.greymerk.editor.editor.boundingbox.BoundingBox;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
+
 
 public class RectPyramid implements IShape {
 
-	private Coord start;
-	private Coord end;
+	private BoundingBox bb;
 	
-	public RectPyramid(Coord start, Coord end){
-		this.start = new Coord(start);
-		this.end = new Coord(end);
+	public RectPyramid(BoundingBox bb){
+		this.bb = bb;
 	}
 	
 	
 	@Override
 	public Iterator<Coord> iterator() {
-		return new SquarePyramidIterator(start, end);
+		return new SquarePyramidIterator(this.bb);
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block) {
 		fill(editor, rand, block, true, true);
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
 		for (Coord pos : this){
 			block.set(editor, rand, pos, fillAir, replaceSolid);
 		}
@@ -58,16 +59,15 @@ public class RectPyramid implements IShape {
 		double thetaX;
 		double thetaZ;
 		
-		public SquarePyramidIterator(Coord start, Coord end){
-			this.start = new Coord(start);
-			Coord s = new Coord(start);
-			Coord e = new Coord(end);
-			Coord.correct(s, e);
+		public SquarePyramidIterator(BoundingBox bb){
+			this.start = bb.getStart();
+			Coord s = bb.getStart();
+			Coord e = bb.getEnd();
 			
 			cursor = new Coord(0,0,0);
 			dir = Cardinal.NORTH;
 			
-			diff = new Coord(e);
+			diff = e.copy();
 			diff.sub(s);
 			
 			double hx = Math.sqrt(Math.pow(diff.getX(), 2) + Math.pow(diff.getY(), 2));
@@ -85,7 +85,7 @@ public class RectPyramid implements IShape {
 		@Override
 		public Coord next() {
 
-			Coord toReturn = new Coord(start);
+			Coord toReturn = start.copy();
 			toReturn.add(Cardinal.UP, cursor.getY());
 			if(dir == Cardinal.NORTH || dir == Cardinal.SOUTH){
 				toReturn.add(Cardinal.left(dir), cursor.getX());

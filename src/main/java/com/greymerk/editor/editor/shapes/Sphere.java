@@ -8,32 +8,32 @@ import com.greymerk.editor.editor.Cardinal;
 import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
+import com.greymerk.editor.editor.boundingbox.BoundingBox;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class Sphere implements IShape {
 
-	private Coord start;
-	private Coord end;
-
-	public Sphere(Coord start, Coord end){
-		this.start = new Coord(start);
-		this.end = new Coord(end);
+	private BoundingBox bb;
+	
+	public Sphere(BoundingBox bb){
+		this.bb = bb;
 	}
 	
 	@Override
 	public Iterator<Coord> iterator() {
-		return new SphereIterator(start, end);
+		return new SphereIterator(bb);
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block) {
 		this.fill(editor, rand, block, true, true);
 
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
 		for(Coord pos : this){
 			block.set(editor, rand, pos, fillAir, replaceSolid);
 		}
@@ -61,12 +61,10 @@ public class Sphere implements IShape {
 		private Cardinal dir;
 		private boolean top;
 		
-		public SphereIterator(Coord centre, Coord end){
-			this.centre = new Coord(centre); 
-			Coord s = new Coord(centre);
-			Coord e = new Coord(end);
-			
-			Coord.correct(s, e);
+		public SphereIterator(BoundingBox bb){
+			this.centre = bb.getStart();
+			Coord s = bb.getStart();
+			Coord e = bb.getEnd();
 			Coord diff = e.sub(s);
 			
 			int r = diff.getX();
@@ -88,7 +86,7 @@ public class Sphere implements IShape {
 
 		@Override
 		public Coord next() {
-			Coord toReturn = new Coord(centre);
+			Coord toReturn = centre.copy();
 			toReturn.add(top ? Cardinal.UP : Cardinal.DOWN, layer);
 			toReturn.add(dir, row);
 			toReturn.add(Cardinal.left(dir), col);

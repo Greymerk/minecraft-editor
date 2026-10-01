@@ -1,0 +1,33 @@
+package com.greymerk.editor.editor.blocks;
+
+import com.greymerk.editor.editor.Cardinal;
+import com.greymerk.editor.editor.Coord;
+import com.greymerk.editor.editor.IWorldEditor;
+import com.greymerk.editor.editor.MetaBlock;
+
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ButtonBlock;
+
+
+
+public enum Button {
+
+	STONE, OAK;
+	
+	public static Block fromType(Button type) {
+		switch(type) {
+		case OAK: return Blocks.OAK_BUTTON;
+		case STONE: return Blocks.STONE_BUTTON;
+		default: return Blocks.STONE_BUTTON;
+		
+		}
+	}
+	
+	public static void generate(IWorldEditor editor, Coord origin, Cardinal dir, Button type) {
+		MetaBlock.of(fromType(type))
+			.with(ButtonBlock.FACING, Cardinal.facing(Cardinal.reverse(dir)))
+			.set(editor, origin);
+	}
+	
+}

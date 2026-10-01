@@ -8,18 +8,18 @@ import com.greymerk.editor.editor.factories.BlockProvider;
 import com.greymerk.editor.tools.ITool;
 import com.greymerk.editor.tools.ToolState;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 
 public class ToolGrid implements ITool {
 
 	@Override
-	public void onClick(IWorldEditor editor, Random rand, PlayerEntity player, ToolState state, Cardinal dir, Coord pos) {
+	public void onClick(IWorldEditor editor, RandomSource rand, Player player, ToolState state, Cardinal dir, Coord pos) {
 		MetaBlock block = editor.getBlock(pos);
 		state.init(BlockProvider.GRID, block);
 		String msg = "New Grid started with " + block.getName();
-		player.sendMessage(Text.of(msg), true);
+		player.sendOverlayMessage(Component.literal(msg));
 	}
 
 }

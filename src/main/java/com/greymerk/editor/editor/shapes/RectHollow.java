@@ -8,47 +8,42 @@ import com.greymerk.editor.editor.Cardinal;
 import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
-import com.greymerk.editor.editor.MetaBlock;
+import com.greymerk.editor.editor.blocks.Air;
+import com.greymerk.editor.editor.boundingbox.BoundingBox;
+import com.greymerk.editor.editor.boundingbox.IBounded;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class RectHollow implements IShape {
 
-	private Coord start;
-	private Coord end;
+	private BoundingBox bb;
 	
-	public RectHollow(Coord start, Coord end){
-		this.start = start;
-		this.end = end;
+	public RectHollow(BoundingBox bb){
+		this.bb = bb;
 	}
 	
-	public static void fill(IWorldEditor editor, Random rand, Coord start, Coord end, IBlockFactory block){
-		fill(editor, rand, start, end, block, true, true);
-	}
-	
-	public static void fill(IWorldEditor editor, Random rand, Coord start, Coord end, IBlockFactory block, boolean fillAir, boolean replaceSolid){
-		RectHollow rect = new RectHollow(start, end);
-		rect.fill(editor, rand, block, fillAir, replaceSolid);
+	public static void fill(IWorldEditor editor, RandomSource rand, IBounded bb, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+		bb.getShape(Shape.RECTHOLLOW).fill(editor, rand, block, fillAir, replaceSolid);
 	}
 
+	public static void fill(IWorldEditor editor, RandomSource rand, IBounded bb, IBlockFactory block) {
+		bb.getShape(Shape.RECTHOLLOW).fill(editor, rand, block, true, true);
+	}
+	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block){
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block){
 		fill(editor, rand, block, true, true);
 	}
 	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
 		for(Coord c : this){
 			block.set(editor, rand, c, fillAir, replaceSolid);
 		}
 		
-		Coord innerStart = new Coord(start);
-		Coord innerEnd = new Coord(end);
-		Coord.correct(innerStart, innerEnd);
-		innerStart.add(new Coord(1, 1, 1));
-		innerEnd.add(new Coord(-1, -1, -1));
-		RectSolid.fill(editor, rand, innerStart, innerEnd, new MetaBlock(Blocks.CAVE_AIR));
+		BoundingBox inner = this.bb.copy().grow(Cardinal.all, -1);
+		RectSolid.fill(editor, rand, inner, Air.get());
 	}
 
 	@Override
@@ -64,7 +59,7 @@ public class RectHollow implements IShape {
 	
 	@Override
 	public Iterator<Coord> iterator() {
-		return new RectHollowIterator(start, end);
+		return new RectHollowIterator(bb);
 	}
 	
 	private class RectHollowIterator implements Iterator<Coord>{
@@ -73,12 +68,10 @@ public class RectHollow implements IShape {
 		Coord c1;
 		Coord c2;
 		
-		public RectHollowIterator(Coord c1, Coord c2){
-			this.c1 = new Coord(c1);
-			this.c2 = new Coord(c2);
-			
-			Coord.correct(this.c1, this.c2);
-			cursor = new Coord(this.c1);
+		public RectHollowIterator(BoundingBox bb){
+			this.c1 = bb.getStart();
+			this.c2 = bb.getEnd();
+			cursor = c1.copy();
 		}
 		
 		@Override
@@ -89,7 +82,7 @@ public class RectHollow implements IShape {
 		@Override
 		public Coord next() {
 			
-			Coord toReturn = new Coord(cursor);
+			Coord toReturn = cursor.copy();
 
 			if(cursor.getZ() == c2.getZ() && cursor.getX() == c2.getX()){
 				cursor = new Coord(c1.getX(), cursor.getY(), c1.getZ());

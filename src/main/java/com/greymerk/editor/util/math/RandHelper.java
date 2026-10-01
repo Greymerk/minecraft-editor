@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class RandHelper {
 
 	private static final int SHUFFLE_THRESHOLD = 5;
 	
 	@SuppressWarnings("unchecked")
-	public static void shuffle(List<?> list, Random rnd) {
+	public static void shuffle(List<?> list, RandomSource rnd) {
         int size = list.size();
         if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
             for (int i=size; i>1; i--)

@@ -8,43 +8,34 @@ import com.greymerk.editor.editor.Cardinal;
 import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
+import com.greymerk.editor.editor.boundingbox.BoundingBox;
 import com.greymerk.editor.editor.boundingbox.IBounded;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
 
 public class RectSolid implements IShape {
 
-	private Coord start;
-	private Coord end;
+	private BoundingBox bb;
 	
-	public RectSolid(Coord start, Coord end){
-		this.start = start;
-		this.end = end;
+	public RectSolid(BoundingBox bb){
+		this.bb = bb;
 	}
 	
-	public static void fill(IWorldEditor editor, Random rand, Coord start, Coord end, IBlockFactory block){
-		fill(editor, rand, start, end, block, true, true);
+	public static void fill(IWorldEditor editor, RandomSource rand, IBounded box, IBlockFactory blocks) {
+		new RectSolid(box.getBoundingBox()).fill(editor, rand, blocks, true, true);
 	}
 	
-	public static void fill(IWorldEditor editor, Random rand, Coord start, Coord end, IBlockFactory block, boolean fillAir, boolean replaceSolid){
-		new RectSolid(start, end).fill(editor, rand, block, fillAir, replaceSolid);
-	}
-	
-	public static void fill(IWorldEditor editor, Random rand, IBounded box, IBlockFactory blocks) {
-		fill(editor, rand, box.getStart(), box.getEnd(), blocks, true, true);
-	}
-	
-	public static void fill(IWorldEditor editor, Random rand, IBounded box, IBlockFactory blocks, boolean fillAir, boolean replaceSolid) {
-		fill(editor, rand, box.getStart(), box.getEnd(), blocks, fillAir, replaceSolid);
+	public static void fill(IWorldEditor editor, RandomSource rand, IBounded box, IBlockFactory blocks, boolean fillAir, boolean replaceSolid) {
+		new RectSolid(box.getBoundingBox()).fill(editor, rand, blocks, fillAir, replaceSolid);
 	}
 	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block){
-		fill(editor, rand, block, true, true);
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block){
+		this.fill(editor, rand, block, true, true);
 	}
 	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
 		this.forEach(c -> block.set(editor, rand, c, fillAir, replaceSolid));
 	}
 
@@ -57,7 +48,7 @@ public class RectSolid implements IShape {
 	
 	@Override
 	public Iterator<Coord> iterator() {
-		return new RectSolidIterator(this.start, this.end);
+		return new RectSolidIterator(this.bb);
 	}
 	
 	private class RectSolidIterator implements Iterator<Coord>{
@@ -66,12 +57,10 @@ public class RectSolid implements IShape {
 		Coord c1;
 		Coord c2;
 		
-		public RectSolidIterator(Coord c1, Coord c2){
-			this.c1 = new Coord(c1);
-			this.c2 = new Coord(c2);
-			
-			Coord.correct(this.c1, this.c2);
-			cursor = new Coord(this.c1);
+		public RectSolidIterator(BoundingBox bb){
+			this.c1 = bb.getStart();
+			this.c2 = bb.getEnd();
+			cursor = this.c1.copy();
 		}
 		
 		@Override
@@ -82,7 +71,7 @@ public class RectSolid implements IShape {
 		@Override
 		public Coord next() {
 			
-			Coord toReturn = new Coord(cursor);
+			Coord toReturn = cursor.copy();
 			
 			if(cursor.getZ() == c2.getZ() && cursor.getX() == c2.getX()){
 				cursor = new Coord(c1.getX(), cursor.getY(), c1.getZ());

@@ -7,7 +7,8 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class BlockColumns extends BlockBase{
 
@@ -22,7 +23,7 @@ public class BlockColumns extends BlockBase{
 	}
 	
 	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord pos, boolean fillAir, boolean replaceSolid) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord pos, boolean fillAir, boolean replaceSolid) {
 		int size = blocks.size();
 		int choice = Math.abs((pos.getX() % size + pos.getZ() % size)) % size;
 		IBlockFactory block = blocks.get(choice);

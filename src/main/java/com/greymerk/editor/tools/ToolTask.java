@@ -9,7 +9,8 @@ import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 import com.greymerk.editor.editor.shapes.IShape;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class ToolTask{
 	
@@ -17,7 +18,7 @@ public class ToolTask{
 	private Iterator<TaskStep> processor;
 	private boolean rollback;
 	
-	public ToolTask(IWorldEditor editor, Random rand, IShape shape, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
+	public ToolTask(IWorldEditor editor, RandomSource rand, IShape shape, IBlockFactory blocks, boolean fillAir, boolean replaceSolid){
 		
 		this.rollback = false; // whether to apply or undo the steps
 		

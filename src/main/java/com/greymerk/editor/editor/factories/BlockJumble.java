@@ -7,7 +7,7 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
 
 public class BlockJumble extends BlockBase {
 
@@ -17,12 +17,13 @@ public class BlockJumble extends BlockBase {
 		blocks = new ArrayList<IBlockFactory>();
 	}
 
-	public void addBlock(IBlockFactory toAdd){
+	public BlockJumble addBlock(IBlockFactory toAdd){
 		blocks.add(toAdd);
+		return this;
 	}
 
 	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord origin, boolean fillAir, boolean replaceSolid) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord origin, boolean fillAir, boolean replaceSolid) {
 		IBlockFactory block = blocks.get(rand.nextInt(blocks.size()));
 		return block.set(editor, rand, origin, fillAir, replaceSolid);
 	}

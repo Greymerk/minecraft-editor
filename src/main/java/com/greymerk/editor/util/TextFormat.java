@@ -1,6 +1,7 @@
 package com.greymerk.editor.util;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum TextFormat {
 
@@ -8,9 +9,9 @@ public enum TextFormat {
 	GRAY, DARKGRAY, BLUE, GREEN, AQUA, RED, LIGHTPURPLE, YELLOW, WHITE, 
 	OBFUSCATED, BOLD, STRIKETHROUGH, UNDERLINE, ITALIC, RESET;
 	
-	public static Text apply(String text, TextFormat option){
+	public static MutableComponent apply(String text, TextFormat option){
 		String withCode = "\u00A7" + getCodeChar(option) + text;
-		return Text.of(withCode);
+		return Component.literal(withCode);
 	}
 	
 	public static String getCode(TextFormat option){

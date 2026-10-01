@@ -4,8 +4,6 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.shapes.IShape;
 import com.greymerk.editor.editor.shapes.Shape;
 
-import net.minecraft.nbt.NbtCompound;
-
 public interface IBounded {
 	
 	public BoundingBox getBoundingBox();
@@ -20,6 +18,4 @@ public interface IBounded {
 	
 	public Coord getEnd();
 
-	public NbtCompound getNbt();
-	
 }

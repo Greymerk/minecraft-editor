@@ -10,14 +10,15 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 import com.greymerk.editor.editor.MetaBlock;
+import com.greymerk.editor.editor.blocks.Air;
 import com.greymerk.editor.editor.factories.BlockGrid;
 import com.greymerk.editor.editor.factories.BlockJumble;
 import com.greymerk.editor.editor.factories.BlockProvider;
 import com.greymerk.editor.editor.factories.BlockStripes;
 import com.greymerk.editor.editor.shapes.IShape;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class ToolState {
 
@@ -34,24 +35,24 @@ public class ToolState {
 		this.brushes = new HashMap<BlockProvider, IBlockFactory>();
 		this.fillAir = true;
 		this.replaceSolid = true;
-		this.init(BlockProvider.METABLOCK, new MetaBlock(Blocks.AIR));
+		this.init(BlockProvider.METABLOCK, Air.get());
 		tasks = new LinkedList<ToolTask>();
 		redo = new LinkedList<ToolTask>();
 	}
 	
-	public void setBlock(IWorldEditor editor, Random rand, Coord pos){
+	public void setBlock(IWorldEditor editor, RandomSource rand, Coord pos){
 		brushes.get(this.type).set(editor, rand, pos);
 	}
 	
 	public void setStart(Coord pos){
-		this.start = new Coord(pos);
+		this.start = pos.copy();
 	}
 	
 	public Coord getStart(){
 		return this.start;
 	}
 	
-	public void fill(IWorldEditor editor, Random rand, IShape shape){
+	public void fill(IWorldEditor editor, RandomSource rand, IShape shape){
 		//shape.fill(editor, rand, brushes.get(this.type), fillAir, replaceSolid);
 		ToolTask task = new ToolTask(editor, rand, shape, brushes.get(this.type), fillAir, replaceSolid);
 		

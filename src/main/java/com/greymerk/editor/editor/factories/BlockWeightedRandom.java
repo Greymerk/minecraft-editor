@@ -6,7 +6,8 @@ import com.greymerk.editor.editor.IWorldEditor;
 import com.greymerk.editor.util.WeightedChoice;
 import com.greymerk.editor.util.WeightedRandomizer;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
 
 public class BlockWeightedRandom extends BlockBase {
 
@@ -16,12 +17,13 @@ public class BlockWeightedRandom extends BlockBase {
 		blocks = new WeightedRandomizer<IBlockFactory>();
 	}
 
-	public void addBlock(IBlockFactory toAdd, int weight){
+	public BlockWeightedRandom addBlock(IBlockFactory toAdd, int weight){
 		blocks.add(new WeightedChoice<IBlockFactory>(toAdd, weight));
+		return this;
 	}
 
 	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord origin, boolean fillAir, boolean replaceSolid) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord origin, boolean fillAir, boolean replaceSolid) {
 		IBlockFactory block = blocks.get(rand);
 		return block.set(editor, rand, origin, fillAir, replaceSolid);
 	}

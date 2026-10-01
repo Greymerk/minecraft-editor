@@ -3,10 +3,11 @@ package com.greymerk.editor.editor.factories;
 import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
-import com.greymerk.editor.editor.MetaBlock;
+import com.greymerk.editor.editor.blocks.Air;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
+
 
 /**
  * This BlockFactory serves the special purpose of
@@ -27,12 +28,12 @@ public class BlockFloor extends BlockBase implements IBlockFactory{
 		this.floor = floor;
 		BlockWeightedRandom bridge = new BlockWeightedRandom();
 		bridge.addBlock(floor, 10);
-		bridge.addBlock(new MetaBlock(Blocks.AIR), 1);
+		bridge.addBlock(Air.get(), 1);
 		this.bridge = bridge;
 	}
 	
 	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord pos, boolean fillAir, boolean replaceSolid) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord pos, boolean fillAir, boolean replaceSolid) {
 		if(!fillAir && editor.isAir(pos)) return false;
 		if(!replaceSolid && editor.isSolid(pos)) return false;
 		

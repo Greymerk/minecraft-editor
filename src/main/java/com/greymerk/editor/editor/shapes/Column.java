@@ -9,7 +9,9 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IBlockFactory;
 import com.greymerk.editor.editor.IWorldEditor;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
+
 
 public class Column implements IShape {
 
@@ -19,18 +21,18 @@ public class Column implements IShape {
 		this.top = top.copy();
 	}
 	
-	public static void fillDown(IWorldEditor editor, Random rand, IBlockFactory blocks, Coord top) {
+	public static void fillDown(IWorldEditor editor, RandomSource rand, IBlockFactory blocks, Coord top) {
 		new Column(top).fillDown(editor, rand, blocks);
 	}
 	
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block) {
-		this.forEach(c -> block.set(editor, rand, top, true, true));
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block) {
+		this.forEach(_ -> block.set(editor, rand, top, true, true));
 	}
 
 	@Override
-	public void fill(IWorldEditor editor, Random rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
-		this.forEach(c -> block.set(editor, rand, top, fillAir, replaceSolid));
+	public void fill(IWorldEditor editor, RandomSource rand, IBlockFactory block, boolean fillAir, boolean replaceSolid) {
+		this.forEach(_ -> block.set(editor, rand, top, fillAir, replaceSolid));
 	}
 
 	public List<Coord> getUntilSolid(IWorldEditor editor){
@@ -47,11 +49,11 @@ public class Column implements IShape {
 		return cl;
 	}
 	
-	public void fillDown(IWorldEditor editor, Random rand, IBlockFactory blocks) {
+	public void fillDown(IWorldEditor editor, RandomSource rand, IBlockFactory blocks) {
 		fillDown(editor, rand, blocks, true, true);
 	}
 	
-	public void fillDown(IWorldEditor editor, Random rand, IBlockFactory blocks, boolean fillAir, boolean replaceSolid) {
+	public void fillDown(IWorldEditor editor, RandomSource rand, IBlockFactory blocks, boolean fillAir, boolean replaceSolid) {
 		Iterator<Coord> itr = new FillDownIterator(editor, top.copy());
 		itr.forEachRemaining(c -> blocks.set(editor, rand, c, fillAir, replaceSolid));
 	}

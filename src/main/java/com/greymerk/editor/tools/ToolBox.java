@@ -23,11 +23,12 @@ import com.greymerk.editor.tools.features.ToolStripes;
 import com.greymerk.editor.tools.features.ToolToggleFillAir;
 import com.greymerk.editor.tools.features.ToolToggleReplaceSolid;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class ToolBox {
 
@@ -62,20 +63,20 @@ public class ToolBox {
 		return tools.get(item);
 	}
 	
-	public boolean holdingTool(PlayerEntity player) {
-		ItemStack held = player.getMainHandStack();
+	public boolean holdingTool(Player player) {
+		ItemStack held = player.getMainHandItem();
 		if(held == null) return false;
 		ITool tool = get(held.getItem());
 		if(tool == null) return false;
 		return true;
 	}
 
-	public void action(IWorldEditor editor, Random rand, PlayerEntity player, Cardinal dir, Coord pos) {
-		ItemStack held = player.getMainHandStack();
+	public void action(IWorldEditor editor, RandomSource rand, Player player, Cardinal dir, Coord pos) {
+		ItemStack held = player.getMainHandItem();
 		if(held == null) return;
 		ITool tool = get(held.getItem());
 		if(tool == null) return;
-		tool.onClick(editor,  rand, player, state, dir, pos);
+		tool.onClick(editor, rand, player, state, dir, pos);
 	}
 	
 	public void process() {

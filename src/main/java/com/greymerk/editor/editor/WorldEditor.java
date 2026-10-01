@@ -1,77 +1,67 @@
 package com.greymerk.editor.editor;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.CheckedRandom;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
+import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+
 
 public class WorldEditor implements IWorldEditor{
 
-	WorldAccess world;
-	private Map<Block, Integer> stats;
+	private Level world;
+	private ResourceKey<Level> worldKey;
 	
-	public WorldEditor(StructureWorldAccess world){
-		this.world = world;
-		stats = new HashMap<Block, Integer>();
+	public static WorldEditor of(Level world) {
+		return new WorldEditor(world);
+	}
+	
+	public static WorldEditor of(ServerLevel world) {
+		return new WorldEditor(world);
 	}
 
-	public WorldEditor(World world) {
+	private WorldEditor(Level world) {
 		this.world = world;
-		stats = new HashMap<Block, Integer>();
+		this.worldKey = world.dimension();
 	}
 
 	@Override
 	public boolean set(Coord pos, MetaBlock block, boolean fillAir, boolean replaceSolid) {
-		MetaBlock currentBlock = getBlock(pos);
-		
-		if(currentBlock.getBlock() == Blocks.CHEST) return false;
-		if(currentBlock.getBlock() == Blocks.TRAPPED_CHEST) return false;
-		if(currentBlock.getBlock() == Blocks.SPAWNER) return false;
+		if(this.hasBlockEntity(pos)) return false;
 		
 		if(!fillAir && this.isAir(pos)) return false;
 		if(!replaceSolid && this.isSolid(pos))	return false;
-		BlockSoundGroup soundGroup = block.getState().getSoundGroup();
-		SoundEvent sound = soundGroup.getPlaceSound();
+		
 		try{
-			world.setBlockState(pos.getBlockPos(), block.getState(), block.getFlag());
-			world.playSound(null, pos.getBlockPos(), 
-					sound, SoundCategory.BLOCKS, 
-					(soundGroup.getVolume() + 1.0f) / 2.0f, 
-					soundGroup.getPitch() * 0.8f);
+			world.setBlock(pos.getBlockPos(), block.getState(), block.getFlag());
 		} catch(NullPointerException npe){
 			//ignore it.
-		}
-		
-		Block type = block.getBlock();
-		Integer count = stats.get(type);
-		if(count == null){
-			stats.put(type, 1);	
-		} else {
-			stats.put(type, count + 1);
 		}
 		
 		return true;
@@ -85,40 +75,55 @@ public class WorldEditor implements IWorldEditor{
 	@Override
 	public MetaBlock getBlock(Coord pos) {
 		BlockState state = world.getBlockState(pos.getBlockPos());
-		return new MetaBlock(state);
+		return MetaBlock.of(state);
 	}
 
 	@Override
 	public boolean isAir(Coord pos) {
-		return world.isAir(pos.getBlockPos());
+		return this.world.isEmptyBlock(pos.getBlockPos());
 	}
-
+	
 	@Override
 	public long getSeed() {
 		MinecraftServer server = this.world.getServer();
-		ServerWorld sw = server.getOverworld();
+		ServerLevel sw = server.overworld();
 		return sw.getSeed();
 	}
 	
 	@Override
-	public Random getRandom(Coord pos) {
-		return new CheckedRandom(Objects.hash(getSeed(), pos.hashCode()));
+	public RandomSource getRandom(Coord pos) {
+		return new LegacyRandomSource(Objects.hash(getSeed(), pos.hashCode()));
 	}
 
 	public boolean isChunkLoaded(Coord pos) {
-		return world.getChunk(pos.getBlockPos()).getStatus() == ChunkStatus.FULL;
+		ChunkPos cp = pos.getChunkPos();
+		return world.hasChunk(cp.x(), cp.z());
+	}
+	
+	public boolean surroundingChunksLoaded(Coord pos) {
+		ChunkPos cpos = pos.getChunkPos();
+		for(int x = cpos.x() - 1; x <= cpos.x() + 1; x++) {
+			for(int z = cpos.z() - 1; z <= cpos.z() + 1; z++) {
+				if(!world.hasChunk(x, z)) return false;
+				ChunkAccess chunk = world.getChunk(x, z);
+				ChunkStatus status = chunk.getPersistedStatus();
+				if(status != ChunkStatus.FULL) return false;
+			}
+		}
+		
+		return true;
 	}
 
 	public Coord findSurface(Coord pos) {
 		
-		Coord cursor = new Coord(pos.getX(), 256, pos.getZ());
+		Coord cursor = new Coord(pos.getX(), world.getMaxY(), pos.getZ());
 		
 		while(cursor.getY() > 60) {
 			MetaBlock m = this.getBlock(cursor);
-			if(m.getState().isIn(BlockTags.LOGS)) continue;
-			if(m.getState().isIn(BlockTags.LEAVES)) continue;
+			if(m.getState().is(BlockTags.LOGS)) continue;
+			if(m.getState().is(BlockTags.LEAVES)) continue;
 			
-			if(!isAir(cursor) && !isPlant(cursor)) return cursor;
+			if(!this.isAir(cursor) && !m.isPlant()) return cursor;
 			cursor.add(Cardinal.DOWN);
 		}
 		
@@ -127,72 +132,102 @@ public class WorldEditor implements IWorldEditor{
 	
 	@Override
 	public boolean isSolid(Coord pos) {
-		return this.world.getBlockState(pos.getBlockPos()).isSolidBlock(world, pos.getBlockPos());
+		return this.world.getBlockState(pos.getBlockPos()).isRedstoneConductor(world, pos.getBlockPos());
 	}
 	
-	public boolean isPlant(Coord pos) {
-		BlockState bs = getBlock(pos).getState();
-		if(bs.isIn(BlockTags.LOGS)) return true;
-		if(bs.isIn(BlockTags.SWORD_EFFICIENT)) return true;
-		return false;
-	}
-	
-	public boolean isGround(Coord pos) {
-		if(isPlant(pos)) return false;
-		if(this.isAir(pos)) return false;
-		
-		List<TagKey<Block>> tags = new ArrayList<TagKey<Block>>();
-		tags.add(BlockTags.BASE_STONE_OVERWORLD);
-		tags.add(BlockTags.DIRT);
-		tags.add(BlockTags.SAND);
-		tags.add(BlockTags.SNOW);
-		tags.add(BlockTags.STONE_ORE_REPLACEABLES);
-		
-		MetaBlock m = getBlock(pos);
-		
-		for(TagKey<Block> tag : tags) {
-			if(m.getState().isIn(tag)) return true;
+	public boolean isSupported(Coord pos) {
+		if(pos.getY() <= world.getMinY()) return false;
+		Coord under = pos.copy().add(Cardinal.DOWN);
+		Block b = this.world.getBlockState(under.getBlockPos()).getBlock();
+		if(b instanceof FallingBlock) {
+			return isSupported(under);
 		}
+		
+		if(!FallingBlock.isFree(world.getBlockState(under.getBlockPos()))) return true;
 		return false;
 	}
+	
+
 	
 	public boolean isOverworld() {
-		return this.world.getDimension().hasSkyLight();
+		MinecraftServer mcServer = world.getServer();
+		ServerLevel sw = mcServer.getLevel(worldKey);
+		return sw.dimensionTypeRegistration().is(BuiltinDimensionTypes.OVERWORLD);
 	}
 
+	@Override
+	public boolean hasBlockEntity(Coord pos) {
+		return this.getBlockEntity(pos) != null;
+	}
+	
 	@Override
 	public BlockEntity getBlockEntity(Coord pos) {
 		return world.getBlockEntity(pos.getBlockPos());
 	}
 	
 	@Override
+	public <T> Optional<T> setBlockEntity(Coord pos, MetaBlock block, Class<T> beClass){
+		if(!this.set(pos, block)) return Optional.empty();
+		Optional<BlockEntity> obe = Optional.of(this.getBlockEntity(pos));
+		if(obe.isEmpty()) return Optional.empty();
+		
+		BlockEntity be = obe.get();
+		if(beClass.isInstance(be)) {
+			return Optional.of(beClass.cast(be));
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	@Override
 	public boolean isFaceFullSquare(Coord pos, Cardinal dir) {
 		BlockState b = this.world.getBlockState(pos.getBlockPos());
 		Direction facing = Cardinal.facing(dir);
-		VoxelShape shape = b.getSidesShape(world, pos.getBlockPos());
+		VoxelShape shape = b.getShape(world, pos.getBlockPos());
 		VoxelShape collision = b.getCollisionShape(world, pos.getBlockPos());
-		boolean isShapeSquare = Block.isFaceFullSquare(shape, facing);
-		boolean isCollisionSquare = Block.isFaceFullSquare(collision, facing);
+		boolean isShapeSquare = Block.isFaceFull(shape, facing);
+		boolean isCollisionSquare = Block.isFaceFull(collision, facing);
 		return isShapeSquare || isCollisionSquare;
 	}
 
 	@Override
 	public int getMaxDepth() {
-		return world.getBottomY();
+		return world.getMinY();
 	}
 	
-	public DynamicRegistryManager getRegistryManager() {
-		DynamicRegistryManager reg = this.world.getRegistryManager();
-		return reg;
+	public RegistryAccess getRegistryManager() {
+		return this.world.registryAccess();
+	}
+	
+	public FeatureFlagSet getFeatureSet() {
+		return this.world.enabledFeatures();
 	}
 	
 	public Path getWorldDirectory() {
-		return this.world.getServer().getSavePath(WorldSavePath.ROOT);
+		return this.world.getServer().getWorldPath(LevelResource.ROOT);
 	}
-
+	
+	public GameRules getGameRules() {
+		return this.getServerWorld().getGameRules();
+	}
+	
+	public ServerLevel getServerWorld() {
+		MinecraftServer server = this.world.getServer();
+		ServerLevel sw = server.overworld();
+		return sw;
+	}
+	
 	@Override
-	public boolean isReplaceable(Coord pos) {
-		BlockState bs = this.world.getBlockState(pos.getBlockPos());
-		return bs.isReplaceable();
+	public Optional<Coord> getStructureLocation(ResourceKey<StructureSet> key, ChunkPos cpos){
+		MinecraftServer mcServer = world.getServer();
+		ServerLevel sw = mcServer.getLevel(worldKey);
+		ChunkGeneratorStructureState calculator = sw.getChunkSource().getGeneratorState();
+		RegistryAccess reg = world.registryAccess();
+		Registry<StructureSet> structures = reg.lookupOrThrow(Registries.STRUCTURE_SET);
+		StructureSet structure = structures.getValue(key);
+		StructurePlacement placement = structure.placement(); 
+		
+		if(!placement.isStructureChunk(calculator, cpos.x(), cpos.z())) return Optional.empty();
+		return Optional.of(Coord.of(placement.getLocatePos(cpos)));
 	}
 }

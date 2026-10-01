@@ -5,11 +5,12 @@ import com.greymerk.editor.editor.Cardinal;
 import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IWorldEditor;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
+
 
 public interface ITool {
 
-	public void onClick(IWorldEditor editor, Random rand, PlayerEntity player, ToolState state, Cardinal dir, Coord pos);
+	public void onClick(IWorldEditor editor, RandomSource rand, Player player, ToolState state, Cardinal dir, Coord pos);
 	
 }

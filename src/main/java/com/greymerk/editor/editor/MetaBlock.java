@@ -1,16 +1,21 @@
 package com.greymerk.editor.editor;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.State;
-import net.minecraft.state.property.Property;
-import net.minecraft.util.math.random.Random;
+import java.util.List;
+
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+
 
 /**
 A Wrapper for Mojang's BlockState objects
 
 MetaBlocks implement IBlockFactory and may
-therefore be used interchangably and
+therefore be used interchangeably and
 recursively with other IBlockFactory containers
 such as BlockWeightedRandom
 **/
@@ -18,33 +23,47 @@ public class MetaBlock extends BlockBase{
 
 	private BlockState state;
     
-	public MetaBlock(Block block){
-		this.setState(block.getDefaultState());
+	public static MetaBlock of(Block block) {
+		return new MetaBlock(block);
 	}
 	
-	public MetaBlock(MetaBlock block){
-		this.setState(block.state);
+	public static MetaBlock of(BlockState state) {
+		return new MetaBlock(state);
 	}
 	
-	public MetaBlock(BlockState state){
-		this.setState(state);
+	private MetaBlock(Block block){
+		this.state = block.defaultBlockState();
 	}
 	
-	public void setState(BlockState bs){
-		this.state = bs;
+	private MetaBlock(BlockState state){
+		this.state = state;
 	}
 	
 	public BlockState getState() {
 		return this.state;
 	}
-
+	
 	public boolean set(IWorldEditor editor, Coord pos){
 		return editor.set(pos, this, true, true);
 	}
 	
-	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord pos, boolean fillAir, boolean replaceSolid) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord pos, boolean fillAir, boolean replaceSolid) {
 		return editor.set(pos, this, fillAir, replaceSolid);
+	}
+	
+	public boolean isIn(TagKey<Block> tag) {
+		return this.state.is(tag);
+	}
+	
+	public boolean isIn(List<TagKey<Block>> tags) {
+		for(TagKey<Block> tag : tags) {
+			if(isIn(tag)) return true;
+		}
+		
+		return false;
+	}
+	public <T extends Comparable<T>> T get(Property<T> property) {
+		return this.state.getValue(property);
 	}
 
 	public Block getBlock() {
@@ -52,16 +71,12 @@ public class MetaBlock extends BlockBase{
 	}
 	
 	public int getFlag(){
-		return Block.NOTIFY_ALL;
+		return Block.UPDATE_ALL;
 	}
 	
-	public String getName() {
-		return this.state.getBlock().asItem().getName().getString();
-	}
-	
-	public <T extends Comparable<T>, V extends T> State<?, BlockState> withProperty(Property<T> property, V value) {
-		this.state = this.state.with(property, value);
-		return this.state;
+	public <T extends Comparable<T>, V extends T> MetaBlock with(Property<T> property, V value) {
+		this.state = this.state.setValue(property, value);
+		return this;
 	}
 	
 	@Override
@@ -72,5 +87,53 @@ public class MetaBlock extends BlockBase{
 		
 		MetaBlock otherBlock = (MetaBlock)other;
 		return this.state.equals(otherBlock.state);
+	}
+	
+	public boolean isReplaceable() {
+		return this.state.canBeReplaced();
+	}
+	
+	public boolean isPlant() {
+		if(this.isIn(BlockTags.LOGS)) return true;
+		if(this.isIn(BlockTags.SWORD_EFFICIENT)) return true;
+		return false;
+	}
+	
+	public boolean isGround() {
+		if(this.isIn(BlockTags.AIR)) return false;
+		
+		// plants etc
+		if(this.isIn(List.of(
+			BlockTags.SWORD_EFFICIENT,
+			BlockTags.MINEABLE_WITH_HOE,
+			BlockTags.MINEABLE_WITH_AXE,
+			BlockTags.SNOW,
+			BlockTags.CLIMBABLE,
+			BlockTags.REPLACEABLE_BY_TREES,
+			BlockTags.FLOWERS
+			))) return false;
+		
+		if(this.getBlock() == Blocks.CACTUS) return false;
+		if(this.getBlock() == Blocks.ICE) return false;
+		
+		// stone & dirt etc
+		return this.isIn(List.of(
+				BlockTags.BASE_STONE_OVERWORLD, 
+				BlockTags.SUBSTRATE_OVERWORLD, 
+				BlockTags.SAND,
+				BlockTags.ICE,
+				BlockTags.STONE_ORE_REPLACEABLES, 
+				BlockTags.MINEABLE_WITH_SHOVEL,
+				BlockTags.BADLANDS_TERRACOTTA));
+		
+	}
+	
+	public String getName() {
+		return this.state.getBlock().getName().getString();
+	}
+	
+	@Override
+	public String toString() {
+		return this.getBlock().getName().getString();
 	}
 }

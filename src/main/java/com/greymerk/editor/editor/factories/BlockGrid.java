@@ -4,7 +4,7 @@ import com.greymerk.editor.editor.Coord;
 import com.greymerk.editor.editor.IWorldEditor;
 import com.greymerk.editor.editor.MetaBlock;
 
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.RandomSource;
 
 public class BlockGrid extends BlockBase {
 
@@ -15,7 +15,7 @@ public class BlockGrid extends BlockBase {
 	}
 
 	@Override
-	public boolean set(IWorldEditor editor, Random rand, Coord origin, boolean fillAir, boolean replaceSolid) {
+	public boolean set(IWorldEditor editor, RandomSource rand, Coord origin, boolean fillAir, boolean replaceSolid) {
 		int x = origin.getX();
 		int z = origin.getZ();
 		
