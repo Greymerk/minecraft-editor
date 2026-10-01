@@ -39,7 +39,7 @@ public class GreyEdit implements ModInitializer{
 
 		@Override
 		public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-			if(world.isClient) return ActionResult.PASS;
+			if(world.isClient()) return ActionResult.PASS;
 			if(hand == Hand.OFF_HAND) return ActionResult.PASS;
 			if(!player.isCreative()) return ActionResult.PASS;
 			
